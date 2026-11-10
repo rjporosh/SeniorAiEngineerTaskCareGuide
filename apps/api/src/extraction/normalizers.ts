@@ -23,7 +23,7 @@ export function parseAmount(raw: string): string | null {
   if (s === '') return null;
   const parenNeg = /^\(.*\)$/.test(s);
   s = s.replace(/^\(|\)$/g, '').replace(/\b[A-Za-z]{3}\b/g, (t) => (ISO_CURRENCIES.has(t.toUpperCase()) ? '' : t));
-  s = s.replace(/[$€£¥₹৳₩₫₪฿₺₽₴\s ]/g, '');
+  s = s.replace(/[$€£¥₹৳₩₫₪฿₺₽₴\s\u00a0]/g, '');
   let neg = parenNeg;
   if (s.startsWith('-') || s.startsWith('−')) { neg = true; s = s.slice(1); }
   if (s.endsWith('-')) { neg = true; s = s.slice(0, -1); }

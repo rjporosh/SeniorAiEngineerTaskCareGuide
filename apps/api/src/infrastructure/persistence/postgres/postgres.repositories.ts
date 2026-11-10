@@ -114,7 +114,7 @@ class PgDocuments implements DocumentRepository {
         return toDoc(doc);
       });
     } catch (e) {
-      if (isUnique(e)) throw new Error('UNIQUE_IDEMPOTENCY');
+      if (isUnique(e)) throw new Error('UNIQUE_IDEMPOTENCY', { cause: e });
       throw e;
     }
   }

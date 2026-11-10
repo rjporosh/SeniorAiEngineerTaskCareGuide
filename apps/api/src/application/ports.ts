@@ -47,7 +47,7 @@ export interface SearchHit {
   documentId: string; chunkId: string; score: number; snippet: string; content: string;
   page: number | null; sheet: string | null; range: string | null;
 }
-export interface SearchFilters extends DocumentFilters {}
+export type SearchFilters = DocumentFilters;
 
 export interface StatsSummary {
   total: number; byStatus: Record<string, number>; requiresReview: number; failed: number;

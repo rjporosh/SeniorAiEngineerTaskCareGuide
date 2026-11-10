@@ -5,7 +5,7 @@ import type { QueuePort } from './application/queue.js';
 import type { Repositories } from './application/ports.js';
 import { OutboxRelay } from './application/outbox-relay.js';
 import { createQueue, retryPolicyOf } from './infrastructure/queue/queue.factory.js';
-import { HEALTH_PROBES, type HealthProbe } from './health/health.tokens.js';
+import type { HealthProbe } from './health/health.tokens.js';
 import { REPOSITORIES } from './persistence.module.js';
 
 export const QUEUE = Symbol('QUEUE');

@@ -8,8 +8,8 @@ import type { ExtractionNote, ExtractionResult, InvoiceExtractorPort } from './t
 interface Line { text: string; page: number | null; sheet: string | null; ref: string | null; confidence: number | null }
 const AMOUNT_RE = /[-(−]?\s*(?:[A-Za-z]{3}\s*)?[$€£¥₹৳]?\s*\d{1,3}(?:[ ,.']\d{3})+(?:[.,]\d{1,2})?\)?-?|[-(−]?\s*[$€£¥₹৳]?\s*\d+(?:[.,]\d{1,2})?\)?-?/;
 const DATE_RE = /\d{4}[-/.]\d{1,2}[-/.]\d{1,2}|\d{1,2}(?:st|nd|rd|th)?[-/. ][A-Za-z]{3,9}[-/. ,]+\d{4}|[A-Za-z]{3,9}\.?\s+\d{1,2}(?:st|nd|rd|th)?,?\s+\d{4}|\d{1,2}[-/.]\d{1,2}[-/.]\d{4}/;
-const INVOICE_NO_LINE_RE = /\b(?:tax\s+)?(?:invoice|inv|bill|credit\s+note)\s*(?:no\.?|number|num|#|id|ref)?\s*[:#.\-]*\s*([A-Z0-9][A-Z0-9\-/_.]{2,40})/i;
-const NUMBER_RE = /\b([A-Z0-9][A-Z0-9\-/_.]{1,40})\b/i;
+const INVOICE_NO_LINE_RE = /\b(?:tax\s+)?(?:invoice|inv|bill|credit\s+note)\s*(?:no\.?|number|num|#|id|ref)?\s*[:#.-]*\s*([A-Z0-9][A-Z0-9/_.-]{2,40})/i;
+const NUMBER_RE = /\b([A-Z0-9][A-Z0-9/_.-]{1,40})\b/i;
 
 const clip = (s: string, n = 200) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
 
@@ -198,21 +198,21 @@ export class RulesInvoiceExtractor implements InvoiceExtractorPort {
         if (m && !DUE_DATE_RE.test(m[0])) this.date(text.slice(m[0].length), line, data, notes, set);
       }
       if (!data.supplierName) {
-        const m = /^(from|supplier|vendor|seller|issued\s+by|sold\s+by)\b\s*[:\-]/i.exec(text);
-        const v = m ? valueAfterLabel(lines, i, /^(?:from|supplier|vendor|seller|issued\s+by|sold\s+by)\b\s*[:\-]?/i) : null;
+        const m = /^(from|supplier|vendor|seller|issued\s+by|sold\s+by)\b\s*[:-]/i.exec(text);
+        const v = m ? valueAfterLabel(lines, i, /^(?:from|supplier|vendor|seller|issued\s+by|sold\s+by)\b\s*[:-]?/i) : null;
         if (v?.value) set('supplierName', v.value, v.line);
       }
       if (!data.customerName) {
-        const m = /^(bill(?:ed)?\s+to|customer|client|sold\s+to|buyer)\b\s*[:\-]?/i.exec(text);
-        const v = m ? valueAfterLabel(lines, i, /^(?:bill(?:ed)?\s+to|customer|client|sold\s+to|buyer)\b\s*[:\-]?/i) : null;
+        const m = /^(bill(?:ed)?\s+to|customer|client|sold\s+to|buyer)\b\s*[:-]?/i.exec(text);
+        const v = m ? valueAfterLabel(lines, i, /^(?:bill(?:ed)?\s+to|customer|client|sold\s+to|buyer)\b\s*[:-]?/i) : null;
         if (v?.value && !/^\d/.test(v.value)) set('customerName', v.value, v.line);
       }
       if (data.subtotal === null && SUBTOTAL_RE.test(text)) this.money('subtotal', text.replace(SUBTOTAL_RE, ''), line, data, notes, set);
-      else if (data.taxAmount === null && TAX_RE.test(text)) this.money('taxAmount', text.replace(TAX_RE, '').replace(/^\s*[:\-]?\s*/, ''), line, data, notes, set);
+      else if (data.taxAmount === null && TAX_RE.test(text)) this.money('taxAmount', text.replace(TAX_RE, '').replace(/^\s*[:-]?\s*/, ''), line, data, notes, set);
       for (const { re, rank } of TOTAL_PRIORITY) {
         const m = re.exec(text);
         if (!m || SUBTOTAL_RE.test(text)) continue;
-        const token = AMOUNT_RE.exec(text.slice(m.index + m[0].length).replace(/^[\s:\-]+/, ''))?.[0];
+        const token = AMOUNT_RE.exec(text.slice(m.index + m[0].length).replace(/^[\s:-]+/, ''))?.[0];
         const amount = token ? parseAmount(token) : null;
         if (amount !== null && (!bestTotal || rank >= bestTotal.rank)) bestTotal = { rank, amount, line };
         break;

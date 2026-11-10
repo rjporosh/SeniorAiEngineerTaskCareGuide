@@ -108,7 +108,7 @@ class MongoDocuments implements DocumentRepository {
   async createWithOutbox(d: Parameters<DocumentRepository['createWithOutbox']>[0], outbox: Parameters<DocumentRepository['createWithOutbox']>[1]) {
     const now = new Date();
     const row = { _id: randomUUID(), ...d, documentType: 'unknown', processingStatus: 'queued', reviewStatus: 'not_required', failureCode: null, failureMessage: null, deletedAt: null, createdAt: now, updatedAt: now };
-    try { await this.m.Doc.create(row); } catch (e) { if (isDup(e)) throw new Error('UNIQUE_IDEMPOTENCY'); throw e; }
+    try { await this.m.Doc.create(row); } catch (e) { if (isDup(e)) throw new Error('UNIQUE_IDEMPOTENCY', { cause: e }); throw e; }
     try {
       const attempt = await this.startAttempt(row._id);
       const ob = outbox(row._id, attempt.id);

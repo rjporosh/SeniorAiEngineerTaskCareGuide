@@ -34,7 +34,7 @@ function looksLikeCsv(head: Buffer): boolean {
   // a multibyte character may be cut at the end of the head window
   const text = new TextDecoder('utf-8', { fatal: false }).decode(body.subarray(0, body.length - 3));
   if (text.includes('\uFFFD')) return false;
-  return !/[\u0001-\u0008\u000e-\u001f]/.test(text);
+  return ![...text].some((ch) => { const c = ch.charCodeAt(0); return (c >= 0x01 && c <= 0x08) || (c >= 0x0e && c <= 0x1f); });
 }
 
 export const extensionOf = (filename: string): string => {
@@ -58,6 +58,7 @@ export function detectFile(head: Buffer, filename: string, declaredMime: string 
 /** Display-safe filename: basename only, control characters and path separators removed, bounded length. */
 export function sanitizeFilename(raw: string): string {
   const base = raw.split(/[\\/]/).pop() ?? '';
-  const cleaned = base.replace(/[\u0000-\u001f\u007f]/g, '').replace(/^\.+/, '').trim().slice(0, 200);
+  const printable = [...base].filter((ch) => { const c = ch.charCodeAt(0); return c > 0x1f && c !== 0x7f; }).join('');
+  const cleaned = printable.replace(/^\.+/, '').trim().slice(0, 200);
   return cleaned.length > 0 ? cleaned : 'unnamed';
 }
