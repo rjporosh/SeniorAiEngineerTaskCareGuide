@@ -101,7 +101,7 @@ Versions were checked against the package registries on 2026-11-10 and pinned (l
 | API | NestJS 12.4, TypeScript 6.0, Node 24 LTS | Node 24 is the newest line the pinned Prisma 7.10 supports (it warns on 26). TypeScript 6.0 satisfies `@nestjs/swagger`'s peer range; 7.x does not yet |
 | Web | Next.js 16.4 (App Router), React 19.3 | Server-side BFF keeps tokens out of browser JavaScript |
 | Processor | Python 3.13, FastAPI, PyMuPDF, Tesseract 5.5, OpenCV, openpyxl, xlrd | Best-in-class bounded parsers; internal service only |
-| Database | PostgreSQL 18 + pgvector (Prisma 7.10 migrations); MongoDB 8 (Mongoose 9) | Canonical relational schema; document store as an alternative |
+| Database | PostgreSQL 18 + pgvector (Prisma 7.10 migrations); MongoDB 8.2 (Mongoose 9); `mongo:8`/`8.0` refuse to start on Linux kernels 6.19+ (SERVER-121912), so 8.2 is pinned | Canonical relational schema; document store as an alternative |
 | Queue | RabbitMQ 4.1 (amqplib 2) · BullMQ 6 on Redis 8 | Different delivery semantics; only the application contract is normalised |
 | Storage | S3-compatible (MinIO) or local filesystem | Files never live in the database |
 | Tests | Vitest 5, pytest 9, Playwright 1.65, k6 1.3 | |
