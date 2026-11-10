@@ -6,7 +6,12 @@ cd "$(dirname "$0")/.."
 [ -f .env ] || { echo "Missing .env - run: cp .env.example .env" >&2; exit 1; }
 set -a; . ./.env; set +a
 
-docker compose -f compose.yaml -f compose.dev.yaml --profile mongodb --profile bullmq up -d --wait postgres rabbitmq mongo redis minio
+if ! docker compose -f compose.yaml -f compose.dev.yaml --profile mongodb --profile bullmq up -d --wait postgres rabbitmq mongo redis minio; then
+  echo "--- infrastructure did not become healthy; diagnostics:" >&2
+  docker compose -f compose.yaml -f compose.dev.yaml --profile mongodb --profile bullmq ps -a >&2 || true
+  for svc in mongo redis postgres rabbitmq minio; do echo "--- logs: $svc" >&2; docker compose -f compose.yaml -f compose.dev.yaml --profile mongodb --profile bullmq logs --tail 30 "$svc" >&2 || true; done
+  exit 1
+fi
 
 # Tests get their own database so they can never pollute the development data.
 TEST_DB="${POSTGRES_DB}_test"
