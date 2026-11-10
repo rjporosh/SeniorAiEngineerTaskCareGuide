@@ -8,8 +8,22 @@ services:
     restart: unless-stopped
     depends_on:
       migrate: { condition: service_completed_successfully }
+      processor: { condition: service_healthy }
       rabbitmq: { condition: service_healthy }
       minio: { condition: service_healthy }
+
+  # Internal-only document processing (PDF text, OCR, spreadsheets). Never published to the host.
+  processor:
+    build: { context: services/document-processor, target: runtime }
+    env_file: .env
+    networks: [internal]
+    restart: unless-stopped
+    mem_limit: 3g
+    cpus: 2
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
 
   # One-shot: applies SQL migrations when DATABASE_PROVIDER=postgres (no-op otherwise).
   migrate:
