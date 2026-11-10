@@ -19,4 +19,4 @@ COPY --from=build /repo/apps/api/package.json package.json
 USER node
 EXPOSE 3001
 HEALTHCHECK --interval=10s --timeout=3s --retries=5 CMD wget -qO- http://127.0.0.1:3001/api/v1/health/live || exit 1
-CMD ["node", "dist/main.js"]
+CMD ["node", "--import", "./dist/instrumentation.js", "dist/main.js"]

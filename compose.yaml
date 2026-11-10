@@ -102,6 +102,46 @@ services:
     networks: [internal]
     restart: unless-stopped
 
+  # ---- optional observability stack: docker compose --profile observability up -d ----
+  jaeger:
+    profiles: [observability]
+    image: jaegertracing/all-in-one:1.62.0
+    environment: { COLLECTOR_OTLP_ENABLED: "true" }
+    ports: ["127.0.0.1:16686:16686"]
+    networks: [internal]
+    restart: unless-stopped
+
+  prometheus:
+    profiles: [observability]
+    image: prom/prometheus:v3.5.0
+    environment: { METRICS_TOKEN: "${METRICS_TOKEN:-}" }
+    entrypoint:
+      - /bin/sh
+      - -c
+      - 'printf "%s" "$$METRICS_TOKEN" > /tmp/metrics-token && exec /bin/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus'
+    volumes:
+      - ./infrastructure/observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - promdata:/prometheus
+    ports: ["127.0.0.1:9090:9090"]
+    networks: [internal]
+    restart: unless-stopped
+
+  grafana:
+    profiles: [observability]
+    image: grafana/grafana:12.1.0
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-change-me-grafana}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+    volumes:
+      - ./infrastructure/observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infrastructure/observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafanadata:/var/lib/grafana
+    ports: ["127.0.0.1:3030:3000"]
+    networks: [internal]
+    depends_on: [prometheus, jaeger]
+    restart: unless-stopped
+
 networks:
   internal: {}
 volumes:
@@ -110,3 +150,5 @@ volumes:
   miniodata: {}
   mongodata: {}
   redisdata: {}
+  promdata: {}
+  grafanadata: {}

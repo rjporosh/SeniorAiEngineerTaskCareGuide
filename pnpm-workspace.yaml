@@ -8,6 +8,7 @@ allowBuilds:
   prisma: true
   "@prisma/client": true
   msgpackr-extract: false
+  protobufjs: false
 minimumReleaseAgeExclude:
   - mongoose@9.12.1
   - bullmq@6.7.3

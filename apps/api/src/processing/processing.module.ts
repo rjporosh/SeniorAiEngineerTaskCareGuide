@@ -10,6 +10,8 @@ import type { HealthProbe } from '../health/health.tokens.js';
 import { REPOSITORIES } from '../persistence.module.js';
 import { QUEUE } from '../queue.module.js';
 import { STORAGE } from '../storage.module.js';
+import { OBS_METRICS } from '../observability/observability.tokens.js';
+import type { AppMetrics } from '../observability/metrics.js';
 import { DocumentValidator } from './document-validator.js';
 import { DocumentProcessingService } from './document-processing.service.js';
 import { HttpDocumentProcessor, type DocumentProcessorPort } from './processor.client.js';
@@ -29,9 +31,11 @@ export const DOCUMENT_VALIDATOR = Symbol('DOCUMENT_VALIDATOR');
     { provide: INVOICE_EXTRACTOR, useFactory: (): InvoiceExtractorPort => new RulesInvoiceExtractor() },
     { provide: DOCUMENT_VALIDATOR, inject: [REPOSITORIES], useFactory: (r: Repositories) => new DocumentValidator(r) },
     {
-      provide: PROCESSING_SERVICE, inject: [REPOSITORIES, STORAGE, DOCUMENT_PROCESSOR, INVOICE_EXTRACTOR, DOCUMENT_VALIDATOR],
-      useFactory: (r: Repositories, s: ObjectStoragePort, p: DocumentProcessorPort, e: InvoiceExtractorPort, v: DocumentValidator) =>
-        new DocumentProcessingService(r, s, p, e, undefined, v),
+      provide: PROCESSING_SERVICE, inject: [REPOSITORIES, STORAGE, DOCUMENT_PROCESSOR, INVOICE_EXTRACTOR, DOCUMENT_VALIDATOR, OBS_METRICS],
+      useFactory: (r: Repositories, s: ObjectStoragePort, p: DocumentProcessorPort, e: InvoiceExtractorPort, v: DocumentValidator, m: AppMetrics) =>
+        new DocumentProcessingService(r, s, p, e, undefined, v, {
+          processed: (outcome, kind, seconds) => { m.documentsProcessed.inc({ outcome, kind }); if (outcome === 'completed') m.processingDuration.observe({ kind }, seconds); },
+        }),
     },
   ],
   exports: [DOCUMENT_PROCESSOR, INVOICE_EXTRACTOR, PROCESSING_SERVICE, DOCUMENT_VALIDATOR],

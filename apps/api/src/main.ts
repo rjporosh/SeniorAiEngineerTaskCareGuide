@@ -3,10 +3,13 @@ import { AppModule } from './app.module.js';
 import { APP_CONFIG } from './app.tokens.js';
 import { configureApp, createApp, setupDocs } from './bootstrap.js';
 import type { AppConfig } from './config/env.schema.js';
+import { OBS_LOGGER } from './observability/observability.tokens.js';
+import type { AppLogger } from './observability/logger.js';
 
 async function bootstrap(): Promise<void> {
   const app = await createApp(AppModule);
   const config = app.get<AppConfig>(APP_CONFIG);
+  app.useLogger(app.get<AppLogger>(OBS_LOGGER));
   configureApp(app, config);
   setupDocs(app, config.NODE_ENV !== 'production' || config.API_DOCS_ENABLED);
   await app.listen(config.PORT, '0.0.0.0');

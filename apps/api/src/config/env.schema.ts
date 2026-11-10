@@ -37,6 +37,7 @@ export const envSchema = z
     PROCESSOR_BASE_URL: z.string().default('http://processor:8000'),
     PROCESSOR_SERVICE_TOKEN: z.string().min(16),
 
+    METRICS_TOKEN: z.string().min(16).optional(),
     SEED_ADMIN_EMAIL: z.email().optional(),
     SEED_ADMIN_PASSWORD: z.string().min(12).optional(),
     API_DOCS_ENABLED: z.enum(['true', 'false']).default('false').transform((v) => v === 'true'),

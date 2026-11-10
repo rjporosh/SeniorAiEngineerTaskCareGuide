@@ -12,6 +12,8 @@ import { failureMessage, REJECTION_CODES } from './failure-messages.js';
 import { ProcessorError, type DocumentProcessorPort } from './processor.client.js';
 import type { ProcessResponse } from './processor.types.js';
 
+export interface ProcessingObserver { processed(outcome: 'completed' | 'rejected' | 'failed', kind: string, seconds: number): void }
+
 export interface Logger2 { log(m: string): void; warn(m: string): void; error(m: string): void }
 
 /**
@@ -26,6 +28,7 @@ export class DocumentProcessingService {
     private readonly extractor: InvoiceExtractorPort,
     private readonly log: Logger2 = new Logger('Processing'),
     private readonly validator: DocumentValidator = new DocumentValidator(repos),
+    private readonly observer?: ProcessingObserver,
   ) {}
 
   handle = async (msg: QueueMessage, ctx: DeliveryContext): Promise<void> => runWithContext({ correlationId: msg.correlationId }, async () => {
@@ -75,6 +78,7 @@ export class DocumentProcessingService {
     await this.validator.reconcileDuplicates(doc, data);
     await this.repos.documents.finishAttempt(attempt.id, { status: 'succeeded' });
     await this.repos.documents.addAudit({ documentId: doc.id, actorId: null, eventType: 'document.processed', metadata: { attempt: attempt.attemptNumber, resultId: result.id, issues: outcome.issues.length, ms: Date.now() - started, kind: processed.file_kind } });
+    this.observer?.processed('completed', processed.file_kind, (Date.now() - started) / 1000);
     this.log.log(`document ${doc.id} completed in ${Date.now() - started}ms (${outcome.issues.length} issue(s), review=${outcome.requiresManualReview})`);
   }
 
@@ -107,6 +111,7 @@ export class DocumentProcessingService {
     const message = failureMessage(code);
     await this.repos.documents.finishAttempt(attempt.id, { status: 'failed', errorCode: code, errorMessage: message, retryable });
     await this.repos.documents.updateStatus(doc.id, status, { failureCode: code, failureMessage: message, reviewStatus: 'not_required' });
+    this.observer?.processed(status === 'rejected' ? 'rejected' : 'failed', doc.detectedMime, 0);
     await this.repos.documents.addAudit({ documentId: doc.id, actorId: null, eventType: 'document.failed', metadata: { code, retryable, attempt: attempt.attemptNumber } });
     if (retryable) throw e; // exhausted retries: let the broker dead-letter the message as well
   }
