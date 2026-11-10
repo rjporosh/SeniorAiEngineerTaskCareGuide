@@ -10,6 +10,8 @@ RUN pnpm --filter @docint/api build \
 
 FROM node:24-alpine
 ENV NODE_ENV=production PRISMA_HIDE_UPDATE_MESSAGE=1
+# The runtime only ever runs `node`; the npm bundled with the base image is unused attack surface (and carried CVEs).
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
 WORKDIR /app
 COPY --from=build /out/node_modules node_modules
 COPY --from=build /repo/apps/api/dist dist

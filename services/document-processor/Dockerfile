@@ -1,5 +1,7 @@
 FROM python:3.13-slim AS base
-ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1
+# OMP_THREAD_LIMIT=1: Tesseract's OpenMP otherwise spawns one thread per host CPU even in a CPU-limited container,
+# which made OCR time out on small CI runners. Parallelism comes from PROCESSOR_CONCURRENCY instead.
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1 OMP_THREAD_LIMIT=1
 RUN apt-get update \
  && apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-eng fonts-dejavu-core curl \
  && rm -rf /var/lib/apt/lists/*
