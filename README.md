@@ -1,56 +1,114 @@
-# Document Intelligence — Claude implementation pack
+# Document Intelligence
 
-This pack contains the project brief and Claude Code operating instructions for the five-day **AI-Powered Document Intelligence System** assignment.
+Upload invoices as PDFs, scans, photos, spreadsheets or CSV files. The system reads them (text extraction and OCR), finds the invoice fields, checks the numbers, flags anything doubtful, and lets a person review, correct and search — with every change audited.
 
-## Included
+![Extraction sheet](tests/e2e/screenshots/document-detail.png)
 
-- `CLAUDE.md` — primary Claude Code project instructions.
-- `.claude/settings.json` — conservative local permissions baseline; no blanket command approvals.
-- `.gitignore` — explicitly ignores `ai-handover.md`, environment secrets and runtime data.
-- `docs/MASTER_SPECIFICATION.md` — requirements, architecture, security and definition of done.
-- `docs/ROADMAP.md` — five-day delivery sequence and exit gates.
-- `docs/PLAN.md` — repository layout, ports/adapters, service contracts, tests and Compose requirements.
-- `ai-handover.md` — local AI working notes; must never be committed.
+| Capability | How it works |
+|---|---|
+| Ingest | Multi-file upload; extension, MIME **and** file-signature checks; size/page/row/sheet/time limits; corrupt or hostile files are rejected without affecting the batch |
+| Read | Digital PDFs use embedded text; scanned/hybrid pages are OCR'd page by page (Tesseract); images are deskewed and contrast-enhanced; TIFF multi-frame; XLSX/XLS/CSV keep sheet and cell coordinates; formulas and macros are never executed |
+| Extract | Versioned invoice schema with field-level evidence and OCR confidence; unknown or ambiguous values stay `null` (never guessed) |
+| Validate | Required fields, decimal-safe subtotal + tax = total, line sums, credit notes, duplicates, PDF↔spreadsheet cross-checks; anything doubtful sets *needs review* |
+| Review | Edit values with optimistic concurrency, accept or resolve issues, reprocess without losing history |
+| Search | Keyword (PostgreSQL full-text / MongoDB text) and semantic (pgvector) search with filters and page/sheet/cell locations |
+| Operate | Switchable database (PostgreSQL · MongoDB · in-memory) and queue (RabbitMQ · BullMQ) by configuration only; outbox pattern; JSON logs, Prometheus metrics, OpenTelemetry traces |
 
-## Start using this pack
+## Quick start
 
-1. Extract/copy these files into the root of the project repository.
-2. Open the repository with Claude Code.
-3. Ask Claude to inspect the repository, read `CLAUDE.md` and the three docs, then execute Day 1 only.
-4. Review the proposed architecture and file tree before authorizing broad implementation.
-5. Keep `ai-handover.md` local. Verify:
-   ```bash
-   git check-ignore -v ai-handover.md
-   ```
-
-## Important implementation note
-
-The brief asks for the latest technologies. Claude must verify exact stable patch versions and compatibility at implementation time, then pin them in manifests and lockfiles. Do not use prerelease/canary versions merely because they have a larger version number.
-
-The default local configuration should be PostgreSQL + RabbitMQ + MinIO. MongoDB, Redis/BullMQ and in-memory adapters are selectable by environment configuration. In-memory storage is for tests/development only.
-
-## Source assignment
-
-The project scope is based on the supplied `Ai Engineer Task 1.3.pdf`. The pack preserves its seven task areas and nine deliverables while adding explicit architecture, security, reliability and execution criteria.
-
-## Quick start (foundation milestone)
+Requires Docker (Compose v2). Nothing else is needed on your machine.
 
 ```bash
-cp .env.example .env          # then replace every CHANGE_ME value (openssl rand -hex 32)
-docker compose up --build     # postgres(pgvector), rabbitmq, minio, api
-curl localhost:4000/api/v1/health/ready
+cp .env.example .env
+# edit .env: replace every CHANGE_ME value (generate secrets with: openssl rand -hex 32)
+docker compose up --build
 ```
 
-Optional provider containers: `docker compose --profile mongodb up` (MongoDB), `--profile bullmq` (Redis).
-Host port of the API is `API_PUBLIC_PORT` (default 4000). Database/broker ports are not published.
+Open **http://localhost:4001** and sign in with `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` from your `.env`. Upload a file from `fixtures/synthetic/` to try it.
 
-## Pinned versions (checked against the npm registry on 2026-11-10)
+| Service | Where | Notes |
+|---|---|---|
+| Web UI | http://localhost:4001 | `WEB_PUBLIC_PORT` |
+| API | http://localhost:4000/api/v1 | `API_PUBLIC_PORT`; OpenAPI at `/api/docs` when `API_DOCS_ENABLED=true` |
+| PostgreSQL, RabbitMQ, MinIO, processor | private network only | no host ports (see `compose.dev.yaml` for developer ports) |
 
-Node 24 LTS image, NestJS 12.4.2, Zod 4.6.7, TypeScript 7.0.2, Vitest 5.1.0, pnpm 12.18.0,
-PostgreSQL 18 (pgvector image), RabbitMQ 4.1. Prisma CLI is pinned to the stable 7.10.1 line
-because the registry `latest` tag currently points at an 8.0 release candidate.
+Optional: `docker compose --profile observability up -d` adds Jaeger (http://localhost:16686), Prometheus (:9090) and Grafana (http://localhost:3030).
+
+## Switching providers (no code changes)
+
+Set these in `.env` and run `docker compose up -d --force-recreate api`:
+
+```env
+DATABASE_PROVIDER=postgres   # postgres | mongodb | memory   (memory: tests/dev only, refused in production)
+QUEUE_PROVIDER=rabbitmq      # rabbitmq | bullmq
+OBJECT_STORAGE_PROVIDER=minio  # minio | local
+```
+
+Start the matching containers: `docker compose --profile mongodb --profile bullmq up -d`. Invalid or incomplete settings stop the API at start-up with a message naming the variable.
+
+All six database × queue combinations were verified end to end (`scripts/verify-providers.sh`). Semantic search needs vectors: it works on PostgreSQL and in-memory and is reported as unavailable on MongoDB (the UI hides the toggle).
+
+## Everyday commands
+
+```bash
+pnpm install                      # workspace dependencies (pnpm 12)
+pnpm --filter @docint/api test    # API unit + HTTP tests
+pnpm --filter @docint/web test    # UI component tests
+./scripts/test-integration.sh     # PostgreSQL/MongoDB/RabbitMQ/Redis contract tests (starts containers)
+docker build --target test -t docint-processor-test services/document-processor && \
+  docker run --rm -e PROCESSOR_SERVICE_TOKEN=test-token-0123456789 docint-processor-test   # processor tests
+pnpm --filter @docint/e2e test    # browser journeys (needs the stack running)
+node scripts/evaluate.mjs         # accuracy/latency evaluation → docs/evaluation-report.md
+./scripts/run-load.sh             # k6 load, spike, upload and stress suites
+```
+
+See [docs/operations.md](docs/operations.md) for migrations, backups and troubleshooting, and [docs/testing.md](docs/testing.md) for the test strategy.
+
+## Documentation
+
+| | |
+|---|---|
+| [docs/architecture.md](docs/architecture.md) | Components, data flow, trust boundaries, design decisions |
+| [docs/api.md](docs/api.md) | Endpoints, response envelope, request/response examples |
+| [docs/database-schema.md](docs/database-schema.md) | Logical model, indexes, migrations |
+| [docs/security.md](docs/security.md) | Threat model and implemented controls |
+| [docs/operations.md](docs/operations.md) | Run, observe, migrate, back up, troubleshoot |
+| [docs/testing.md](docs/testing.md) | Test pyramid and exact commands |
+| [docs/performance.md](docs/performance.md) | Measured load/stress/OCR results |
+| [docs/evaluation-report.md](docs/evaluation-report.md) | Measured extraction accuracy (generated) |
+| [docs/walkthrough.md](docs/walkthrough.md) | Demo script |
+| [docs/ai-assistance.md](docs/ai-assistance.md) | How AI assistance was used |
+
+## Technology decisions
+
+Versions were checked against the package registries on 2026-11-10 and pinned (lockfiles, exact image tags). Stable releases only.
+
+| Area | Choice | Why |
+|---|---|---|
+| API | NestJS 12.4, TypeScript 6.0, Node 24 LTS | Node 24 is the newest line the pinned Prisma 7.10 supports (it warns on 26). TypeScript 6.0 satisfies `@nestjs/swagger`'s peer range; 7.x does not yet |
+| Web | Next.js 16.4 (App Router), React 19.3 | Server-side BFF keeps tokens out of browser JavaScript |
+| Processor | Python 3.13, FastAPI, PyMuPDF, Tesseract 5.5, OpenCV, openpyxl, xlrd | Best-in-class bounded parsers; internal service only |
+| Database | PostgreSQL 18 + pgvector (Prisma 7.10 migrations); MongoDB 8 (Mongoose 9) | Canonical relational schema; document store as an alternative |
+| Queue | RabbitMQ 4.1 (amqplib 2) · BullMQ 6 on Redis 8 | Different delivery semantics; only the application contract is normalised |
+| Storage | S3-compatible (MinIO) or local filesystem | Files never live in the database |
+| Tests | Vitest 5, pytest 9, Playwright 1.65, k6 1.3 | |
+
+Official documentation: [NestJS](https://docs.nestjs.com) · [Next.js](https://nextjs.org/docs) · [Prisma](https://www.prisma.io/docs) · [PostgreSQL](https://www.postgresql.org/docs/18/) · [pgvector](https://github.com/pgvector/pgvector) · [RabbitMQ](https://www.rabbitmq.com/docs) · [BullMQ](https://docs.bullmq.io) · [Tesseract](https://tesseract-ocr.github.io/) · [PyMuPDF](https://pymupdf.readthedocs.io) · [OpenTelemetry](https://opentelemetry.io/docs/) · [k6](https://grafana.com/docs/k6/latest/).
 
 ## Known limitations
 
-- MinIO no longer publishes an official pullable image; Compose uses the frozen
-  `bitnamilegacy/minio` pinned tag. Use `OBJECT_STORAGE_PROVIDER=local` or your own S3 for production.
+- **Extraction is rule-based** (no LLM): it understands English labels and the layouts in the evaluation set. A model-backed extractor can be added behind `InvoiceExtractorPort`; none is enabled. See the evaluation report for measured accuracy and its caveats (synthetic data).
+- OCR quality drops on blurred or rotated photos (see the evaluation report); low OCR confidence is surfaced as a review reason, not hidden.
+- Semantic search uses a deterministic hashing embedding (lexical similarity), not a language model.
+- Multi-invoice files: the first invoice is extracted and the file is flagged. Multi-row spreadsheets are searchable and cross-checked per row but produce no single invoice.
+- Line items can be viewed but not edited in the UI (the API accepts them).
+- MongoDB (standalone) has no multi-document transactions; the outbox write uses a compensating delete. Semantic search is unavailable on MongoDB.
+- RabbitMQ delayed retries use per-message TTL, which can delay a short retry behind a longer one in the same retry queue.
+- The compose stack pins `bitnamilegacy/minio` because MinIO no longer publishes a pullable official image; for production use your own S3.
+- Not deployed anywhere yet: CI is provided, hosting configuration is intentionally out of scope. The browser UI is a standard Node server (it cannot run on Vercel/Netlify alone because it proxies to the private API).
+- PyMuPDF is AGPL-licensed; review that before distributing a closed-source build.
+- The 1,000-page limit is tested for digital PDFs (see performance report); OCR time scales with the number of scanned pages.
+
+## License
+
+See [LICENSE](LICENSE).
