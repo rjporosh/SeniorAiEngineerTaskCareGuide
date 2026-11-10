@@ -1,0 +1,23 @@
+# secrets & local state
+.env
+.env.*
+!.env.example
+ai-handover.md
+# runtime data
+uploads/
+storage/
+logs/
+*.log
+# deps & builds
+node_modules/
+dist/
+.next/
+coverage/
+.turbo/
+__pycache__/
+.venv/
+.pytest_cache/
+*.pyc
+# OS/IDE
+.DS_Store
+.idea/
