@@ -80,8 +80,8 @@ export interface UserRepository {
 
 export interface DocumentRepository {
   readonly capabilities: { semanticSearch: boolean };
-  /** Creates the document and its outbox message atomically. */
-  createWithOutbox(doc: NewDocument, outbox: (documentId: string) => NewOutbox): Promise<DocumentRecord>;
+  /** Creates the document, its first attempt and the outbox message atomically. */
+  createWithOutbox(doc: NewDocument, outbox: (documentId: string, attemptId: string) => NewOutbox): Promise<DocumentRecord>;
   findById(id: string): Promise<DocumentRecord | null>;
   findByIdempotencyKey(ownerId: string, key: string): Promise<DocumentRecord | null>;
   list(query: ListQuery): Promise<Page<DocumentListItem>>;

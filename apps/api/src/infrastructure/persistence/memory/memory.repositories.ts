@@ -75,7 +75,8 @@ class MemoryDocuments implements DocumentRepository {
       failureCode: null, failureMessage: null, createdAt: now, updatedAt: now,
     };
     this.docs.set(rec.id, rec);
-    const ob = outbox(rec.id);
+    const attempt = await this.startAttempt(rec.id);
+    const ob = outbox(rec.id, attempt.id);
     const row: OutboxRecord = { id: randomUUID(), ...ob, status: 'pending', attempts: 0, availableAt: now, lastError: null, createdAt: now, sentAt: null };
     this.outbox.rows.set(row.id, row);
     return { ...rec };

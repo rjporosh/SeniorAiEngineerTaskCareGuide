@@ -108,7 +108,9 @@ class PgDocuments implements DocumentRepository {
     try {
       return await this.db.$transaction(async (tx) => {
         const doc = await tx.document.create({ data: { ...d, byteSize: BigInt(d.byteSize), processingStatus: 'queued' } });
-        await tx.outboxMessage.create({ data: { topic: outbox(doc.id).topic, payload: json(outbox(doc.id).payload) } });
+        const attempt = await this.nextAttempt(tx, doc.id);
+        const ob = outbox(doc.id, attempt.id);
+        await tx.outboxMessage.create({ data: { topic: ob.topic, payload: json(ob.payload) } });
         return toDoc(doc);
       });
     } catch (e) {

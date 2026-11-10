@@ -20,7 +20,7 @@ export function runRepositoryContract(name: string, create: () => Promise<Reposi
 
     const newDoc = (over: Record<string, unknown> = {}) => repos.documents.createWithOutbox(
       { ownerId, originalFilename: 'a.pdf', detectedMime: 'application/pdf', byteSize: 10, sha256: 'abc', storageKey: `k-${Math.random()}`, storageProvider: 'local', idempotencyKey: null, ...over },
-      (documentId) => ({ topic: 'document.process', payload: { documentId } }),
+      (documentId, attemptId) => ({ topic: 'document.process', payload: { documentId, attemptId } }),
     );
 
     it('stores users with unique, case-insensitive email and rotating refresh tokens', async () => {
@@ -50,7 +50,8 @@ export function runRepositoryContract(name: string, create: () => Promise<Reposi
 
     it('tracks attempts immutably across reprocess', async () => {
       const d = await newDoc();
-      const a1 = await repos.documents.startAttempt(d.id);
+      const a1 = (await repos.documents.listAttempts(d.id))[0]!;
+      expect(a1.attemptNumber).toBe(1);
       await repos.documents.finishAttempt(a1.id, { status: 'failed', errorCode: 'X', errorMessage: 'boom', retryable: false });
       const a2 = await repos.documents.startAttemptWithOutbox(d.id, (a) => ({ topic: 'document.process', payload: { documentId: d.id, attemptId: a.id } }));
       expect([a1.attemptNumber, a2.attemptNumber]).toEqual([1, 2]);

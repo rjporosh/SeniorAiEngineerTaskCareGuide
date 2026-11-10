@@ -20,6 +20,11 @@ export const envSchema = z
     RABBITMQ_URL: z.string().optional(),
     REDIS_URL: z.string().optional(),
 
+    QUEUE_MAX_ATTEMPTS: z.coerce.number().int().min(1).max(20).default(5),
+    QUEUE_RETRY_BASE_MS: z.coerce.number().int().min(10).default(2000),
+    QUEUE_RETRY_MAX_MS: z.coerce.number().int().min(10).default(60000),
+    QUEUE_CONCURRENCY: z.coerce.number().int().min(1).max(32).default(2),
+
     OBJECT_STORAGE_PROVIDER: z.enum(['minio', 'local']).default('minio'),
     STORAGE_LOCAL_ROOT: z.string().default('./storage'),
     S3_ENDPOINT: z.string().optional(),

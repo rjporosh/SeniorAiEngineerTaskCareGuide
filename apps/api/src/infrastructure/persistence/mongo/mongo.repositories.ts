@@ -110,9 +110,11 @@ class MongoDocuments implements DocumentRepository {
     const row = { _id: randomUUID(), ...d, documentType: 'unknown', processingStatus: 'queued', reviewStatus: 'not_required', failureCode: null, failureMessage: null, deletedAt: null, createdAt: now, updatedAt: now };
     try { await this.m.Doc.create(row); } catch (e) { if (isDup(e)) throw new Error('UNIQUE_IDEMPOTENCY'); throw e; }
     try {
-      const ob = outbox(row._id);
+      const attempt = await this.startAttempt(row._id);
+      const ob = outbox(row._id, attempt.id);
       await this.m.Outbox.create({ _id: randomUUID(), ...ob, status: 'pending', attempts: 0, availableAt: now, lastError: null, createdAt: now, sentAt: null });
     } catch (e) {
+      await this.m.Attempt.deleteMany({ documentId: row._id });
       await this.m.Doc.deleteOne({ _id: row._id }); // compensate: standalone MongoDB has no multi-document transactions
       throw e;
     }
