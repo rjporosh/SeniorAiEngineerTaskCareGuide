@@ -12,6 +12,21 @@ services:
       rabbitmq: { condition: service_healthy }
       minio: { condition: service_healthy }
 
+  web:
+    build: { context: ., dockerfile: apps/web/Dockerfile }
+    environment:
+      API_INTERNAL_URL: http://api:3001/api/v1
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+    ports: ["${WEB_PUBLIC_PORT:-4001}:3000"]
+    networks: [internal]
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp, /app/apps/web/.next/cache]
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    depends_on:
+      api: { condition: service_healthy }
+
   # Internal-only document processing (PDF text, OCR, spreadsheets). Never published to the host.
   processor:
     build: { context: services/document-processor, target: runtime }

@@ -8,7 +8,11 @@ set -a; . ./.env; set +a
 
 docker compose -f compose.yaml -f compose.dev.yaml --profile mongodb --profile bullmq up -d --wait postgres rabbitmq mongo redis minio
 
-export DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@127.0.0.1:55432/${POSTGRES_DB}"
+# Tests get their own database so they can never pollute the development data.
+TEST_DB="${POSTGRES_DB}_test"
+docker compose exec -T postgres psql -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" -tAc "SELECT 1 FROM pg_database WHERE datname='${TEST_DB}'" | grep -q 1 \
+  || docker compose exec -T postgres createdb -U "${POSTGRES_USER}" "${TEST_DB}"
+export DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@127.0.0.1:55432/${TEST_DB}"
 export TEST_DATABASE_URL="$DATABASE_URL"
 export TEST_MONGODB_URI="mongodb://127.0.0.1:57017/docint_test"
 export TEST_RABBITMQ_URL="amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@127.0.0.1:55672"
