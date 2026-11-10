@@ -123,3 +123,23 @@ jobs:
         with: { image-ref: docint-web, severity: "CRITICAL,HIGH", ignore-unfixed: true, exit-code: "1" }
       - uses: aquasecurity/trivy-action@0.28.0
         with: { image-ref: docint-processor, severity: "CRITICAL,HIGH", ignore-unfixed: true, exit-code: "1" }
+
+  deploy-web:
+    name: Deploy web to Vercel (optional)
+    runs-on: ubuntu-latest
+    needs: [static-and-unit, processor, contracts, e2e, security]
+    # Runs only on main, and only when the repository opted in with VERCEL_DEPLOY=true and provided the Vercel secrets.
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.VERCEL_DEPLOY == 'true' }}
+    environment: production
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ env.NODE_VERSION }}" }
+      - run: npm install --global vercel@65.14.0
+      - run: vercel pull --yes --environment=production --token "$VERCEL_TOKEN"
+      - run: vercel build --prod --token "$VERCEL_TOKEN"
+      - run: vercel deploy --prebuilt --prod --token "$VERCEL_TOKEN"

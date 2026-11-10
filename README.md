@@ -14,6 +14,18 @@ Upload invoices as PDFs, scans, photos, spreadsheets or CSV files. The system re
 | Search | Keyword (PostgreSQL full-text / MongoDB text) and semantic (pgvector) search with filters and page/sheet/cell locations |
 | Operate | Switchable database (PostgreSQL · MongoDB · in-memory) and queue (RabbitMQ · BullMQ) by configuration only; outbox pattern; JSON logs, Prometheus metrics, OpenTelemetry traces |
 
+## Live demo
+
+**Live demo:** _not published yet._ Deploy it in one click by following [docs/deployment.md](docs/deployment.md) (a validated `render.yaml` is included), then replace this line with your URL. Free instances sleep when idle, so the first load can take about a minute.
+
+**Demo sign-in** (reviewer role, public on purpose, only valid on a deployment that seeds it):
+
+| Email | Password |
+|---|---|
+| `demo@docint.example` | `Recruiter-Demo-2026` |
+
+Try it with the files in `fixtures/synthetic/` (for example `edge-arithmetic.pdf`, `scanned-01.pdf`, `sheet-01.xlsx`). Do not upload real documents to a public demo.
+
 ## Quick start
 
 Requires Docker (Compose v2). Nothing else is needed on your machine.
@@ -77,6 +89,7 @@ See [docs/operations.md](docs/operations.md) for migrations, backups and trouble
 | [docs/performance.md](docs/performance.md) | Measured load/stress/OCR results |
 | [docs/evaluation-report.md](docs/evaluation-report.md) | Measured extraction accuracy (generated) |
 | [docs/walkthrough.md](docs/walkthrough.md) | Demo script |
+| [docs/deployment.md](docs/deployment.md) | Free demo hosting (Render blueprint, Vercel, Northflank) and the demo account |
 | [docs/ai-assistance.md](docs/ai-assistance.md) | How AI assistance was used |
 
 ## Technology decisions
@@ -105,7 +118,7 @@ Official documentation: [NestJS](https://docs.nestjs.com) · [Next.js](https://n
 - MongoDB (standalone) has no multi-document transactions; the outbox write uses a compensating delete. Semantic search is unavailable on MongoDB.
 - RabbitMQ delayed retries use per-message TTL, which can delay a short retry behind a longer one in the same retry queue.
 - The compose stack pins `bitnamilegacy/minio` because MinIO no longer publishes a pullable official image; for production use your own S3.
-- Not deployed anywhere yet: CI is provided, hosting configuration is intentionally out of scope. The browser UI is a standard Node server (it cannot run on Vercel/Netlify alone because it proxies to the private API).
+- Not published yet: no hosting account was available, so there is no live URL. `render.yaml` (schema-validated), a Vercel config and a verification script are provided; see [docs/deployment.md](docs/deployment.md). The web app needs a reachable API, so Vercel/Netlify alone cannot host the whole product.
 - PyMuPDF is AGPL-licensed; review that before distributing a closed-source build.
 - The 1,000-page limit is tested for digital PDFs (see performance report); OCR time scales with the number of scanned pages.
 

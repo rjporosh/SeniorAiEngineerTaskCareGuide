@@ -1,0 +1,108 @@
+# One-click free demo on Render: https://render.com/deploy?repo=<your public GitHub repo URL>
+# Free instances sleep after ~15 minutes without traffic (the first request then takes up to a minute) and uploaded files
+# live on ephemeral disk, so this is for demonstrations, not for real documents.
+# Demo sign-in (public on purpose, reviewer role): demo@docint.example / Recruiter-Demo-2026
+
+envVarGroups:
+  - name: docint-shared-secrets
+    envVars:
+      - key: PROCESSOR_SERVICE_TOKEN
+        generateValue: true
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+
+databases:
+  - name: docint-db
+    databaseName: docint
+    user: docint
+    plan: free
+    region: oregon
+
+services:
+  - type: keyvalue
+    name: docint-queue
+    plan: free
+    region: oregon
+    maxmemoryPolicy: noeviction
+    ipAllowList: []            # reachable only from services in this workspace/region
+
+  - type: web
+    name: docint-processor
+    runtime: docker
+    dockerfilePath: ./services/document-processor/Dockerfile
+    dockerContext: ./services/document-processor
+    plan: free
+    region: oregon
+    healthCheckPath: /health/live
+    envVars:
+      - fromGroup: docint-shared-secrets
+      - key: OCR_LANGUAGES
+        value: eng
+      - key: PROCESSOR_CONCURRENCY
+        value: "1"
+
+  - type: web
+    name: docint-api
+    runtime: docker
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    # Apply migrations, then start (pre-deploy commands are not available on free instances).
+    dockerCommand: sh -c "node migrate.mjs && node --import ./dist/instrumentation.js dist/main.js"
+    plan: free
+    region: oregon
+    healthCheckPath: /api/v1/health/live
+    envVars:
+      - fromGroup: docint-shared-secrets
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_PROVIDER
+        value: postgres
+      - key: DATABASE_URL
+        fromDatabase:
+          name: docint-db
+          property: connectionString
+      - key: QUEUE_PROVIDER
+        value: bullmq
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: docint-queue
+          property: connectionString
+      - key: OBJECT_STORAGE_PROVIDER
+        value: local
+      - key: STORAGE_LOCAL_ROOT
+        value: /tmp/storage
+      - key: PROCESSOR_BASE_URL
+        fromService:
+          type: web
+          name: docint-processor
+          property: hostport
+      - key: TRUST_PROXY
+        value: "true"
+      - key: SEED_DEMO_EMAIL
+        value: demo@docint.example
+      - key: SEED_DEMO_PASSWORD
+        value: Recruiter-Demo-2026
+      - key: MAX_FILE_SIZE_MB
+        value: "10"
+      - key: MAX_FILES_PER_BATCH
+        value: "10"
+      - key: QUEUE_CONCURRENCY
+        value: "1"
+
+  - type: web
+    name: docint-web
+    runtime: docker
+    dockerfilePath: ./apps/web/Dockerfile
+    dockerContext: .
+    plan: free
+    region: oregon
+    healthCheckPath: /login
+    envVars:
+      - key: API_INTERNAL_URL
+        fromService:
+          type: web
+          name: docint-api
+          property: hostport
+      - key: COOKIE_SECURE
+        value: "true"
