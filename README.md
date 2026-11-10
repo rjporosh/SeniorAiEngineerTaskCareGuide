@@ -1,5 +1,7 @@
 # Document Intelligence
 
+[![CI](https://github.com/rjporosh/SeniorAiEngineerTaskCareGuide/actions/workflows/ci.yml/badge.svg)](https://github.com/rjporosh/SeniorAiEngineerTaskCareGuide/actions/workflows/ci.yml)
+
 Upload invoices as PDFs, scans, photos, spreadsheets or CSV files. The system reads them (text extraction and OCR), finds the invoice fields, checks the numbers, flags anything doubtful, and lets a person review, correct and search — with every change audited.
 
 ![Extraction sheet](tests/e2e/screenshots/document-detail.png)
@@ -16,7 +18,7 @@ Upload invoices as PDFs, scans, photos, spreadsheets or CSV files. The system re
 
 ## Live demo
 
-**Live demo:** _not published yet._ Deploy it in one click by following [docs/deployment.md](docs/deployment.md) (a validated `render.yaml` is included), then replace this line with your URL. Free instances sleep when idle, so the first load can take about a minute.
+**Live demo:** _not published yet._ Create it in one click with [**Deploy to Render**](https://render.com/deploy?repo=https://github.com/rjporosh/SeniorAiEngineerTaskCareGuide) (uses the schema-validated `render.yaml`; details and the Vercel option are in [docs/deployment.md](docs/deployment.md)), verify it with `node scripts/check-deployment.mjs`, then replace this line with your URL. Free instances sleep when idle, so the first load can take about a minute.
 
 **Demo sign-in** (reviewer role, public on purpose, only valid on a deployment that seeds it):
 

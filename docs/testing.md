@@ -23,4 +23,4 @@ Static checks: `pnpm typecheck`, `pnpm lint` (workspace-wide), `docker compose c
 
 ## CI
 
-`.github/workflows/ci.yml` runs static checks, API and UI tests, processor tests, adapter contracts, the browser journeys and the smoke test, a dependency audit, and builds all images with a vulnerability scan.
+`.github/workflows/ci.yml` (all jobs green on GitHub-hosted runners on the latest commit; the optional Vercel deploy job is skipped unless opted in) runs static checks, API and UI tests, processor tests, adapter contracts, the browser journeys and the smoke test, a dependency audit, and builds all images with a vulnerability scan.
