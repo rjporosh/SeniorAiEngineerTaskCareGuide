@@ -45,7 +45,7 @@ export class DocumentsService {
     const [result, issues] = await Promise.all([this.repos.documents.findCurrentResult(id), this.repos.documents.listIssues(id)]);
     return {
       document: toDocumentView(doc),
-      result: result && { id: result.id, version: result.version, extraction: result.current, original: result.raw, extractor: result.extractor, updatedAt: result.updatedAt.toISOString() },
+      result: result && { id: result.id, version: result.version, extraction: { ...result.current, requiresManualReview: doc.reviewStatus === 'pending' }, original: result.raw, extractor: result.extractor, updatedAt: result.updatedAt.toISOString() },
       issues: issues.map((i) => ({ id: i.id, code: i.code, severity: i.severity, message: i.message, fields: i.fields, details: i.details, resolution: i.resolution })),
     };
   }

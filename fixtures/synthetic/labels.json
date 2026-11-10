@@ -1,0 +1,1371 @@
+{
+  "seed": 20261110,
+  "generatedBy": "services/document-processor/tools/generate_dataset.py",
+  "documents": [
+    {
+      "file": "digital-01.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2026-0001",
+        "invoiceDate": "2025-08-23",
+        "supplierName": "Helios Energy PLC",
+        "customerName": "Wayne Enterprises",
+        "subtotal": "14480.8",
+        "taxAmount": "1448.08",
+        "totalAmount": "15928.88",
+        "currency": "EUR"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-02.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2025-0002",
+        "invoiceDate": "2026-05-24",
+        "supplierName": "Blue Harbor Logistics Inc",
+        "customerName": "Initech Solutions",
+        "subtotal": "13255.14",
+        "taxAmount": "2651.03",
+        "totalAmount": "15906.17",
+        "currency": "EUR"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-03.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2025-0003",
+        "invoiceDate": "2025-07-05",
+        "supplierName": "Cedar & Pine Furniture Co.",
+        "customerName": "Wayne Enterprises",
+        "subtotal": "4526.53",
+        "taxAmount": "452.65",
+        "totalAmount": "4979.18",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-04.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2025-0004",
+        "invoiceDate": "2025-08-09",
+        "supplierName": "Ironbridge Tools Ltd",
+        "customerName": "Umbrella Retail Group",
+        "subtotal": "11356.67",
+        "taxAmount": "567.83",
+        "totalAmount": "11924.5",
+        "currency": "EUR"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-05.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2025-0005",
+        "invoiceDate": "2025-07-21",
+        "supplierName": "Granite Works Pty",
+        "customerName": "Stark Manufacturing",
+        "subtotal": "8339",
+        "taxAmount": "833.9",
+        "totalAmount": "9172.9",
+        "currency": "GBP"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-06.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2025-0006",
+        "invoiceDate": "2025-02-13",
+        "supplierName": "Granite Works Pty",
+        "customerName": "Hooli Systems",
+        "subtotal": "24533.11",
+        "taxAmount": "1226.66",
+        "totalAmount": "25759.77",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-07.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2026-0007",
+        "invoiceDate": "2025-06-09",
+        "supplierName": "Northwind Traders Ltd",
+        "customerName": "Hooli Systems",
+        "subtotal": "1955.44",
+        "taxAmount": "391.09",
+        "totalAmount": "2346.53",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-08.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2025-0008",
+        "invoiceDate": "2025-02-03",
+        "supplierName": "Helios Energy PLC",
+        "customerName": "Stark Manufacturing",
+        "subtotal": "3105.28",
+        "taxAmount": "155.26",
+        "totalAmount": "3260.54",
+        "currency": "EUR"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-09.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2026-0009",
+        "invoiceDate": "2025-07-15",
+        "supplierName": "Ironbridge Tools Ltd",
+        "customerName": "Globex Corporation",
+        "subtotal": "7049.4",
+        "taxAmount": "1409.88",
+        "totalAmount": "8459.28",
+        "currency": "GBP"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-10.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2025-0010",
+        "invoiceDate": "2026-03-19",
+        "supplierName": "Blue Harbor Logistics Inc",
+        "customerName": "Stark Manufacturing",
+        "subtotal": "14046.48",
+        "taxAmount": "702.32",
+        "totalAmount": "14748.8",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-11.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2026-0011",
+        "invoiceDate": "2025-03-19",
+        "supplierName": "Evergreen Foods GmbH",
+        "customerName": "Stark Manufacturing",
+        "subtotal": "405.84",
+        "taxAmount": "40.58",
+        "totalAmount": "446.42",
+        "currency": "GBP"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-12.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2026-0012",
+        "invoiceDate": "2025-02-27",
+        "supplierName": "Helios Energy PLC",
+        "customerName": "Vandelay Imports",
+        "subtotal": "22122.38",
+        "taxAmount": "1106.12",
+        "totalAmount": "23228.5",
+        "currency": "GBP"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-13.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2026-0013",
+        "invoiceDate": "2026-01-31",
+        "supplierName": "Granite Works Pty",
+        "customerName": "Hooli Systems",
+        "subtotal": "19914.24",
+        "taxAmount": "995.71",
+        "totalAmount": "20909.95",
+        "currency": "GBP"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-14.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2026-0014",
+        "invoiceDate": "2025-02-28",
+        "supplierName": "Falcon Electronics Corp",
+        "customerName": "Initech Solutions",
+        "subtotal": "28439.25",
+        "taxAmount": "5687.85",
+        "totalAmount": "34127.1",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-15.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2025-0015",
+        "invoiceDate": "2026-08-21",
+        "supplierName": "Helios Energy PLC",
+        "customerName": "Wayne Enterprises",
+        "subtotal": "14490.64",
+        "taxAmount": "724.53",
+        "totalAmount": "15215.17",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-16.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2025-0016",
+        "invoiceDate": "2025-10-16",
+        "supplierName": "Northwind Traders Ltd",
+        "customerName": "Initech Solutions",
+        "subtotal": "27669.2",
+        "taxAmount": "5533.84",
+        "totalAmount": "33203.04",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-17.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2025-0017",
+        "invoiceDate": "2025-08-22",
+        "supplierName": "Falcon Electronics Corp",
+        "customerName": "Hooli Systems",
+        "subtotal": "2829.22",
+        "taxAmount": "565.84",
+        "totalAmount": "3395.06",
+        "currency": "GBP"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-18.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2026-0018",
+        "invoiceDate": "2026-08-09",
+        "supplierName": "Blue Harbor Logistics Inc",
+        "customerName": "Stark Manufacturing",
+        "subtotal": "25363.04",
+        "taxAmount": "5072.61",
+        "totalAmount": "30435.65",
+        "currency": "GBP"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-19.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2025-0019",
+        "invoiceDate": "2025-02-27",
+        "supplierName": "Cedar & Pine Furniture Co.",
+        "customerName": "Wayne Enterprises",
+        "subtotal": "13809.66",
+        "taxAmount": "1380.97",
+        "totalAmount": "15190.63",
+        "currency": "GBP"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-20.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2025-0020",
+        "invoiceDate": "2025-01-10",
+        "supplierName": "Blue Harbor Logistics Inc",
+        "customerName": "Globex Corporation",
+        "subtotal": "22806.28",
+        "taxAmount": "4561.26",
+        "totalAmount": "27367.54",
+        "currency": "GBP"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-21.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2025-0021",
+        "invoiceDate": "2025-06-25",
+        "supplierName": "Delta Office Products Limited",
+        "customerName": "Umbrella Retail Group",
+        "subtotal": "19183.67",
+        "taxAmount": "1918.37",
+        "totalAmount": "21102.04",
+        "currency": "GBP"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-22.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2025-0022",
+        "invoiceDate": "2026-05-18",
+        "supplierName": "Blue Harbor Logistics Inc",
+        "customerName": "Globex Corporation",
+        "subtotal": "9705.99",
+        "taxAmount": "485.3",
+        "totalAmount": "10191.29",
+        "currency": "EUR"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-23.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2026-0023",
+        "invoiceDate": "2025-12-05",
+        "supplierName": "Blue Harbor Logistics Inc",
+        "customerName": "Globex Corporation",
+        "subtotal": "8473.09",
+        "taxAmount": "1694.62",
+        "totalAmount": "10167.71",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-24.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2026-0024",
+        "invoiceDate": "2025-11-23",
+        "supplierName": "Northwind Traders Ltd",
+        "customerName": "Stark Manufacturing",
+        "subtotal": "7759.2",
+        "taxAmount": "1551.84",
+        "totalAmount": "9311.04",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-25.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2025-0025",
+        "invoiceDate": "2025-07-28",
+        "supplierName": "Ironbridge Tools Ltd",
+        "customerName": "Vandelay Imports",
+        "subtotal": "15052.81",
+        "taxAmount": "1505.28",
+        "totalAmount": "16558.09",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-26.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2025-0026",
+        "invoiceDate": "2026-06-27",
+        "supplierName": "Apex Industrial Supplies LLC",
+        "customerName": "Globex Corporation",
+        "subtotal": "7077.2",
+        "taxAmount": "353.86",
+        "totalAmount": "7431.06",
+        "currency": "GBP"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-27.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2026-0027",
+        "invoiceDate": "2026-03-07",
+        "supplierName": "Evergreen Foods GmbH",
+        "customerName": "Initech Solutions",
+        "subtotal": "2110.9",
+        "taxAmount": "105.54",
+        "totalAmount": "2216.44",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-28.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2025-0028",
+        "invoiceDate": "2025-09-27",
+        "supplierName": "Evergreen Foods GmbH",
+        "customerName": "Wayne Enterprises",
+        "subtotal": "11837.26",
+        "taxAmount": "591.86",
+        "totalAmount": "12429.12",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-29.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2025-0029",
+        "invoiceDate": "2026-05-05",
+        "supplierName": "Ironbridge Tools Ltd",
+        "customerName": "Globex Corporation",
+        "subtotal": "4169.52",
+        "taxAmount": "416.95",
+        "totalAmount": "4586.47",
+        "currency": "GBP"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "digital-30.pdf",
+      "kind": "digital_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2025-0030",
+        "invoiceDate": "2025-12-05",
+        "supplierName": "Cedar & Pine Furniture Co.",
+        "customerName": "Vandelay Imports",
+        "subtotal": "21161.79",
+        "taxAmount": "2116.18",
+        "totalAmount": "23277.97",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "scanned-01.pdf",
+      "kind": "scanned_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2025-0031",
+        "invoiceDate": "2025-02-10",
+        "supplierName": "Helios Energy PLC",
+        "customerName": "Stark Manufacturing",
+        "subtotal": "8788.14",
+        "taxAmount": "878.81",
+        "totalAmount": "9666.95",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "scanned-02.pdf",
+      "kind": "scanned_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2026-0032",
+        "invoiceDate": "2026-05-24",
+        "supplierName": "Ironbridge Tools Ltd",
+        "customerName": "Initech Solutions",
+        "subtotal": "26099.18",
+        "taxAmount": "2609.92",
+        "totalAmount": "28709.1",
+        "currency": "EUR"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "scanned-03.pdf",
+      "kind": "scanned_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2025-0033",
+        "invoiceDate": "2026-05-11",
+        "supplierName": "Helios Energy PLC",
+        "customerName": "Hooli Systems",
+        "subtotal": "9253.63",
+        "taxAmount": "1850.73",
+        "totalAmount": "11104.36",
+        "currency": "EUR"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "scanned-04.pdf",
+      "kind": "scanned_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2025-0034",
+        "invoiceDate": "2025-03-30",
+        "supplierName": "Ironbridge Tools Ltd",
+        "customerName": "Umbrella Retail Group",
+        "subtotal": "2007.66",
+        "taxAmount": "200.77",
+        "totalAmount": "2208.43",
+        "currency": "GBP"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "scanned-05.pdf",
+      "kind": "scanned_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2026-0035",
+        "invoiceDate": "2025-07-22",
+        "supplierName": "Delta Office Products Limited",
+        "customerName": "Initech Solutions",
+        "subtotal": "9520.28",
+        "taxAmount": "1904.06",
+        "totalAmount": "11424.34",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "scanned-06.pdf",
+      "kind": "scanned_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2026-0036",
+        "invoiceDate": "2025-03-14",
+        "supplierName": "Helios Energy PLC",
+        "customerName": "Stark Manufacturing",
+        "subtotal": "12047.45",
+        "taxAmount": "2409.49",
+        "totalAmount": "14456.94",
+        "currency": "EUR"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "scanned-07.pdf",
+      "kind": "scanned_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2026-0037",
+        "invoiceDate": "2026-07-05",
+        "supplierName": "Ironbridge Tools Ltd",
+        "customerName": "Vandelay Imports",
+        "subtotal": "14855.61",
+        "taxAmount": "742.78",
+        "totalAmount": "15598.39",
+        "currency": "EUR"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "scanned-08.pdf",
+      "kind": "scanned_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2026-0038",
+        "invoiceDate": "2025-09-04",
+        "supplierName": "Ironbridge Tools Ltd",
+        "customerName": "Wayne Enterprises",
+        "subtotal": "25819.89",
+        "taxAmount": "2581.99",
+        "totalAmount": "28401.88",
+        "currency": "GBP"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "scanned-09.pdf",
+      "kind": "scanned_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2025-0039",
+        "invoiceDate": "2026-02-15",
+        "supplierName": "Ironbridge Tools Ltd",
+        "customerName": "Initech Solutions",
+        "subtotal": "8857.3",
+        "taxAmount": "442.86",
+        "totalAmount": "9300.16",
+        "currency": "EUR"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "scanned-10.pdf",
+      "kind": "scanned_pdf",
+      "expected": {
+        "invoiceNumber": "INV-2026-0040",
+        "invoiceDate": "2025-07-29",
+        "supplierName": "Apex Industrial Supplies LLC",
+        "customerName": "Initech Solutions",
+        "subtotal": "14383.08",
+        "taxAmount": "2876.62",
+        "totalAmount": "17259.7",
+        "currency": "GBP"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "image-01.png",
+      "kind": "png",
+      "expected": {
+        "invoiceNumber": "INV-2025-0041",
+        "invoiceDate": "2026-05-12",
+        "supplierName": "Ironbridge Tools Ltd",
+        "customerName": "Umbrella Retail Group",
+        "subtotal": "5303.16",
+        "taxAmount": "265.16",
+        "totalAmount": "5568.32",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "image-02.png",
+      "kind": "png",
+      "expected": {
+        "invoiceNumber": "INV-2025-0042",
+        "invoiceDate": "2025-08-27",
+        "supplierName": "Ironbridge Tools Ltd",
+        "customerName": "Vandelay Imports",
+        "subtotal": "10710.81",
+        "taxAmount": "2142.16",
+        "totalAmount": "12852.97",
+        "currency": "GBP"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "image-03.png",
+      "kind": "png",
+      "expected": {
+        "invoiceNumber": "INV-2025-0043",
+        "invoiceDate": "2025-10-12",
+        "supplierName": "Apex Industrial Supplies LLC",
+        "customerName": "Stark Manufacturing",
+        "subtotal": "3360.12",
+        "taxAmount": "336.01",
+        "totalAmount": "3696.13",
+        "currency": "EUR"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "image-04.png",
+      "kind": "png",
+      "expected": {
+        "invoiceNumber": "INV-2026-0044",
+        "invoiceDate": "2025-01-10",
+        "supplierName": "Granite Works Pty",
+        "customerName": "Initech Solutions",
+        "subtotal": "28179.64",
+        "taxAmount": "1408.98",
+        "totalAmount": "29588.62",
+        "currency": "GBP"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "image-05.png",
+      "kind": "png",
+      "expected": {
+        "invoiceNumber": "INV-2025-0045",
+        "invoiceDate": "2025-04-20",
+        "supplierName": "Cedar & Pine Furniture Co.",
+        "customerName": "Globex Corporation",
+        "subtotal": "21839.37",
+        "taxAmount": "4367.87",
+        "totalAmount": "26207.24",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "image-06.png",
+      "kind": "png",
+      "expected": {
+        "invoiceNumber": "INV-2026-0046",
+        "invoiceDate": "2025-04-16",
+        "supplierName": "Granite Works Pty",
+        "customerName": "Stark Manufacturing",
+        "subtotal": "7327.03",
+        "taxAmount": "366.35",
+        "totalAmount": "7693.38",
+        "currency": "GBP"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "image-07.png",
+      "kind": "png",
+      "expected": {
+        "invoiceNumber": "INV-2026-0047",
+        "invoiceDate": "2025-05-17",
+        "supplierName": "Blue Harbor Logistics Inc",
+        "customerName": "Vandelay Imports",
+        "subtotal": "1430.1",
+        "taxAmount": "286.02",
+        "totalAmount": "1716.12",
+        "currency": "EUR"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "image-08.png",
+      "kind": "png",
+      "expected": {
+        "invoiceNumber": "INV-2025-0048",
+        "invoiceDate": "2025-09-10",
+        "supplierName": "Delta Office Products Limited",
+        "customerName": "Stark Manufacturing",
+        "subtotal": "15079.95",
+        "taxAmount": "754",
+        "totalAmount": "15833.95",
+        "currency": "EUR"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "photo-01.jpg",
+      "kind": "jpeg_lowquality",
+      "expected": {
+        "invoiceNumber": "INV-2026-0049",
+        "invoiceDate": "2026-06-17",
+        "supplierName": "Northwind Traders Ltd",
+        "customerName": "Wayne Enterprises",
+        "subtotal": "13036.35",
+        "taxAmount": "651.82",
+        "totalAmount": "13688.17",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "photo-02.jpg",
+      "kind": "jpeg_lowquality",
+      "expected": {
+        "invoiceNumber": "INV-2026-0050",
+        "invoiceDate": "2025-09-05",
+        "supplierName": "Evergreen Foods GmbH",
+        "customerName": "Hooli Systems",
+        "subtotal": "343.4",
+        "taxAmount": "34.34",
+        "totalAmount": "377.74",
+        "currency": "EUR"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "photo-03.jpg",
+      "kind": "jpeg_lowquality",
+      "expected": {
+        "invoiceNumber": "INV-2026-0051",
+        "invoiceDate": "2025-08-24",
+        "supplierName": "Delta Office Products Limited",
+        "customerName": "Vandelay Imports",
+        "subtotal": "6304.41",
+        "taxAmount": "1260.88",
+        "totalAmount": "7565.29",
+        "currency": "EUR"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "photo-04.jpg",
+      "kind": "jpeg_lowquality",
+      "expected": {
+        "invoiceNumber": "INV-2025-0052",
+        "invoiceDate": "2026-03-17",
+        "supplierName": "Delta Office Products Limited",
+        "customerName": "Globex Corporation",
+        "subtotal": "7890.6",
+        "taxAmount": "789.06",
+        "totalAmount": "8679.66",
+        "currency": "EUR"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "photo-05.jpg",
+      "kind": "jpeg_lowquality",
+      "expected": {
+        "invoiceNumber": "INV-2025-0053",
+        "invoiceDate": "2025-06-02",
+        "supplierName": "Cedar & Pine Furniture Co.",
+        "customerName": "Initech Solutions",
+        "subtotal": "17753.72",
+        "taxAmount": "1775.37",
+        "totalAmount": "19529.09",
+        "currency": "GBP"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "photo-06.jpg",
+      "kind": "jpeg_lowquality",
+      "expected": {
+        "invoiceNumber": "INV-2025-0054",
+        "invoiceDate": "2025-10-07",
+        "supplierName": "Ironbridge Tools Ltd",
+        "customerName": "Stark Manufacturing",
+        "subtotal": "19119.25",
+        "taxAmount": "1911.92",
+        "totalAmount": "21031.17",
+        "currency": "EUR"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "scan-01.tiff",
+      "kind": "tiff_multiframe",
+      "expected": {
+        "invoiceNumber": "INV-2026-0055",
+        "invoiceDate": "2025-12-20",
+        "supplierName": "Delta Office Products Limited",
+        "customerName": "Initech Solutions",
+        "subtotal": "10686.65",
+        "taxAmount": "2137.33",
+        "totalAmount": "12823.98",
+        "currency": "EUR"
+      },
+      "expectedReview": true,
+      "expectedIssueCodes": [
+        "MULTIPLE_INVOICES"
+      ],
+      "note": "second frame holds another invoice: first is extracted, the file is flagged"
+    },
+    {
+      "file": "scan-02.tiff",
+      "kind": "tiff_multiframe",
+      "expected": {
+        "invoiceNumber": "INV-2026-0057",
+        "invoiceDate": "2025-06-28",
+        "supplierName": "Granite Works Pty",
+        "customerName": "Umbrella Retail Group",
+        "subtotal": "13197.36",
+        "taxAmount": "659.87",
+        "totalAmount": "13857.23",
+        "currency": "EUR"
+      },
+      "expectedReview": true,
+      "expectedIssueCodes": [
+        "MULTIPLE_INVOICES"
+      ],
+      "note": "second frame holds another invoice: first is extracted, the file is flagged"
+    },
+    {
+      "file": "scan-03.tiff",
+      "kind": "tiff_multiframe",
+      "expected": {
+        "invoiceNumber": "INV-2025-0059",
+        "invoiceDate": "2025-10-31",
+        "supplierName": "Falcon Electronics Corp",
+        "customerName": "Stark Manufacturing",
+        "subtotal": "12697.86",
+        "taxAmount": "1269.79",
+        "totalAmount": "13967.65",
+        "currency": "EUR"
+      },
+      "expectedReview": true,
+      "expectedIssueCodes": [
+        "MULTIPLE_INVOICES"
+      ],
+      "note": "second frame holds another invoice: first is extracted, the file is flagged"
+    },
+    {
+      "file": "scan-04.tiff",
+      "kind": "tiff_multiframe",
+      "expected": {
+        "invoiceNumber": "INV-2026-0061",
+        "invoiceDate": "2026-03-23",
+        "supplierName": "Northwind Traders Ltd",
+        "customerName": "Vandelay Imports",
+        "subtotal": "19971.14",
+        "taxAmount": "998.56",
+        "totalAmount": "20969.7",
+        "currency": "EUR"
+      },
+      "expectedReview": true,
+      "expectedIssueCodes": [
+        "MULTIPLE_INVOICES"
+      ],
+      "note": "second frame holds another invoice: first is extracted, the file is flagged"
+    },
+    {
+      "file": "sheet-01.xlsx",
+      "kind": "xlsx",
+      "expected": {
+        "invoiceNumber": "INV-2026-0063",
+        "invoiceDate": "2025-01-18",
+        "supplierName": "Falcon Electronics Corp",
+        "customerName": "Hooli Systems",
+        "subtotal": "9114.71",
+        "taxAmount": "455.74",
+        "totalAmount": "9570.45",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "sheet-02.xlsx",
+      "kind": "xlsx",
+      "expected": {
+        "invoiceNumber": "INV-2025-0064",
+        "invoiceDate": "2025-10-15",
+        "supplierName": "Granite Works Pty",
+        "customerName": "Wayne Enterprises",
+        "subtotal": "19695.62",
+        "taxAmount": "1969.56",
+        "totalAmount": "21665.18",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "sheet-03.xlsx",
+      "kind": "xlsx",
+      "expected": {
+        "invoiceNumber": "INV-2026-0065",
+        "invoiceDate": "2026-07-22",
+        "supplierName": "Ironbridge Tools Ltd",
+        "customerName": "Stark Manufacturing",
+        "subtotal": "12008.9",
+        "taxAmount": "600.44",
+        "totalAmount": "12609.34",
+        "currency": "GBP"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "sheet-04.xlsx",
+      "kind": "xlsx",
+      "expected": {
+        "invoiceNumber": "INV-2026-0066",
+        "invoiceDate": "2025-09-02",
+        "supplierName": "Evergreen Foods GmbH",
+        "customerName": "Globex Corporation",
+        "subtotal": "9843.24",
+        "taxAmount": "984.32",
+        "totalAmount": "10827.56",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "sheet-05.xlsx",
+      "kind": "xlsx",
+      "expected": {
+        "invoiceNumber": "INV-2026-0067",
+        "invoiceDate": "2025-12-04",
+        "supplierName": "Ironbridge Tools Ltd",
+        "customerName": "Hooli Systems",
+        "subtotal": "12875.97",
+        "taxAmount": "643.8",
+        "totalAmount": "13519.77",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "legacy-01.xls",
+      "kind": "xls",
+      "expected": {
+        "invoiceNumber": "INV-2026-0068",
+        "invoiceDate": "2025-05-16",
+        "supplierName": "Ironbridge Tools Ltd",
+        "customerName": "Vandelay Imports",
+        "subtotal": "5639.58",
+        "taxAmount": "563.96",
+        "totalAmount": "6203.54",
+        "currency": "EUR"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "legacy-02.xls",
+      "kind": "xls",
+      "expected": {
+        "invoiceNumber": "INV-2025-0069",
+        "invoiceDate": "2025-01-20",
+        "supplierName": "Helios Energy PLC",
+        "customerName": "Vandelay Imports",
+        "subtotal": "29519.8",
+        "taxAmount": "5903.96",
+        "totalAmount": "35423.76",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "legacy-03.xls",
+      "kind": "xls",
+      "expected": {
+        "invoiceNumber": "INV-2025-0070",
+        "invoiceDate": "2025-01-28",
+        "supplierName": "Blue Harbor Logistics Inc",
+        "customerName": "Globex Corporation",
+        "subtotal": "12074.51",
+        "taxAmount": "603.73",
+        "totalAmount": "12678.24",
+        "currency": "EUR"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "export-01.csv",
+      "kind": "csv",
+      "expected": {
+        "invoiceNumber": "INV-2025-0071",
+        "invoiceDate": "2026-01-07",
+        "supplierName": "Evergreen Foods GmbH",
+        "customerName": "Stark Manufacturing",
+        "subtotal": "5841.5",
+        "taxAmount": "584.15",
+        "totalAmount": "6425.65",
+        "currency": "GBP"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "export-02.csv",
+      "kind": "csv",
+      "expected": {
+        "invoiceNumber": "INV-2026-0072",
+        "invoiceDate": "2025-06-23",
+        "supplierName": "Delta Office Products Limited",
+        "customerName": "Umbrella Retail Group",
+        "subtotal": "10180.55",
+        "taxAmount": "2036.11",
+        "totalAmount": "12216.66",
+        "currency": "GBP"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "export-03.csv",
+      "kind": "csv",
+      "expected": {
+        "invoiceNumber": "INV-2025-0073",
+        "invoiceDate": "2025-05-01",
+        "supplierName": "Evergreen Foods GmbH",
+        "customerName": "Hooli Systems",
+        "subtotal": "19758.01",
+        "taxAmount": "3951.6",
+        "totalAmount": "23709.61",
+        "currency": "EUR"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "export-04.csv",
+      "kind": "csv",
+      "expected": {
+        "invoiceNumber": "INV-2026-0074",
+        "invoiceDate": "2025-01-01",
+        "supplierName": "Cedar & Pine Furniture Co.",
+        "customerName": "Umbrella Retail Group",
+        "subtotal": "6316.31",
+        "taxAmount": "1263.26",
+        "totalAmount": "7579.57",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "export-05.csv",
+      "kind": "csv",
+      "expected": {
+        "invoiceNumber": "INV-2025-0075",
+        "invoiceDate": "2026-08-18",
+        "supplierName": "Blue Harbor Logistics Inc",
+        "customerName": "Hooli Systems",
+        "subtotal": "21241.74",
+        "taxAmount": "1062.09",
+        "totalAmount": "22303.83",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "edge-arithmetic.pdf",
+      "kind": "edge",
+      "expected": {
+        "invoiceNumber": "INV-2026-0076",
+        "invoiceDate": "2025-09-16",
+        "supplierName": "Ironbridge Tools Ltd",
+        "customerName": "Globex Corporation",
+        "subtotal": "5684.34",
+        "taxAmount": "284.22",
+        "totalAmount": "5993.56",
+        "currency": "USD"
+      },
+      "expectedReview": true,
+      "expectedIssueCodes": [
+        "TOTAL_MISMATCH"
+      ],
+      "note": "total does not equal subtotal + tax"
+    },
+    {
+      "file": "edge-ambiguous-date.pdf",
+      "kind": "edge",
+      "expected": {
+        "invoiceNumber": "INV-2025-0077",
+        "invoiceDate": null,
+        "supplierName": "Granite Works Pty",
+        "customerName": "Initech Solutions",
+        "subtotal": "11557.27",
+        "taxAmount": "2311.45",
+        "totalAmount": "13868.72",
+        "currency": "USD"
+      },
+      "expectedReview": true,
+      "expectedIssueCodes": [
+        "DATE_AMBIGUOUS"
+      ],
+      "note": "03/04/2026 is ambiguous: must stay null"
+    },
+    {
+      "file": "edge-missing-tax.pdf",
+      "kind": "edge",
+      "expected": {
+        "invoiceNumber": "INV-2026-0078",
+        "invoiceDate": "2025-11-01",
+        "supplierName": "Granite Works Pty",
+        "customerName": "Umbrella Retail Group",
+        "subtotal": "13016.95",
+        "taxAmount": null,
+        "totalAmount": "14318.65",
+        "currency": "GBP"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": "no tax line: tax must stay null, not inferred"
+    },
+    {
+      "file": "edge-credit-note.pdf",
+      "kind": "edge",
+      "expected": {
+        "invoiceNumber": "INV-2025-0079",
+        "invoiceDate": "2026-05-06",
+        "supplierName": "Ironbridge Tools Ltd",
+        "customerName": "Initech Solutions",
+        "subtotal": "-18361.01",
+        "taxAmount": "-3672.2",
+        "totalAmount": "-22033.21",
+        "currency": "EUR"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": "negative amounts are legitimate on credit notes"
+    },
+    {
+      "file": "edge-european.pdf",
+      "kind": "edge",
+      "expected": {
+        "invoiceNumber": "INV-2026-0080",
+        "invoiceDate": "2026-04-29",
+        "supplierName": "Falcon Electronics Corp",
+        "customerName": "Wayne Enterprises",
+        "subtotal": "9420.48",
+        "taxAmount": "471.02",
+        "totalAmount": "9891.5",
+        "currency": "EUR"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": "1.234,56 number format"
+    },
+    {
+      "file": "edge-duplicate-a.pdf",
+      "kind": "edge",
+      "expected": {
+        "invoiceNumber": "INV-2026-0081",
+        "invoiceDate": "2025-11-19",
+        "supplierName": "Evergreen Foods GmbH",
+        "customerName": "Vandelay Imports",
+        "subtotal": "25418.78",
+        "taxAmount": "5083.76",
+        "totalAmount": "30502.54",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": ""
+    },
+    {
+      "file": "edge-duplicate-b.pdf",
+      "kind": "edge",
+      "expected": {
+        "invoiceNumber": "INV-2026-0081",
+        "invoiceDate": "2025-11-19",
+        "supplierName": "Evergreen Foods GmbH",
+        "customerName": "Vandelay Imports",
+        "subtotal": "25418.78",
+        "taxAmount": "5083.76",
+        "totalAmount": "30502.54",
+        "currency": "USD"
+      },
+      "expectedReview": true,
+      "expectedIssueCodes": [
+        "DUPLICATE_INVOICE_CANDIDATE"
+      ],
+      "note": "same invoice re-issued with a different layout"
+    },
+    {
+      "file": "edge-injection.pdf",
+      "kind": "edge",
+      "expected": {
+        "invoiceNumber": "INV-2026-0082",
+        "invoiceDate": "2025-11-04",
+        "supplierName": "Falcon Electronics Corp",
+        "customerName": "Globex Corporation",
+        "subtotal": "3453.96",
+        "taxAmount": "172.7",
+        "totalAmount": "3626.66",
+        "currency": "USD"
+      },
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": "prompt-injection text must not alter extraction"
+    },
+    {
+      "file": "corrupt.pdf",
+      "kind": "corrupt",
+      "expected": {},
+      "expectedReview": false,
+      "expectedIssueCodes": [],
+      "note": "must be rejected as corrupt, not crash the batch"
+    }
+  ]
+}

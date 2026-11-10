@@ -1,0 +1,730 @@
+{
+  "generatedAt": "2026-11-10T16:29:27.827Z",
+  "rows": [
+    {
+      "file": "digital-01.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-02.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-03.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-04.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-05.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-06.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-07.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-08.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-09.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-10.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-11.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-12.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-13.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-14.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-15.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-16.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-17.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-18.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-19.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-20.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-21.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-22.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-23.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-24.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-25.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-26.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-27.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-28.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-29.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "digital-30.pdf",
+      "kind": "digital_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "scanned-01.pdf",
+      "kind": "scanned_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "scanned-02.pdf",
+      "kind": "scanned_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "scanned-03.pdf",
+      "kind": "scanned_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "scanned-04.pdf",
+      "kind": "scanned_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "scanned-05.pdf",
+      "kind": "scanned_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "scanned-06.pdf",
+      "kind": "scanned_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "scanned-07.pdf",
+      "kind": "scanned_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "scanned-08.pdf",
+      "kind": "scanned_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "scanned-09.pdf",
+      "kind": "scanned_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "scanned-10.pdf",
+      "kind": "scanned_pdf",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "image-01.png",
+      "kind": "png",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "image-02.png",
+      "kind": "png",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "image-03.png",
+      "kind": "png",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "image-04.png",
+      "kind": "png",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "image-05.png",
+      "kind": "png",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "image-06.png",
+      "kind": "png",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "image-07.png",
+      "kind": "png",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "image-08.png",
+      "kind": "png",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "photo-01.jpg",
+      "kind": "jpeg_lowquality",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "photo-02.jpg",
+      "kind": "jpeg_lowquality",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "photo-03.jpg",
+      "kind": "jpeg_lowquality",
+      "status": "completed",
+      "ok": false,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": [
+        "supplierName: expected delta office products limited got velta office products limited"
+      ]
+    },
+    {
+      "file": "photo-04.jpg",
+      "kind": "jpeg_lowquality",
+      "status": "completed",
+      "ok": false,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": [
+        "supplierName: expected delta office products limited got velta office products limited"
+      ]
+    },
+    {
+      "file": "photo-05.jpg",
+      "kind": "jpeg_lowquality",
+      "status": "completed",
+      "ok": false,
+      "predictedReview": true,
+      "expectedReview": false,
+      "wrong": [
+        "totalAmount: expected 19529.0900 got null"
+      ]
+    },
+    {
+      "file": "photo-06.jpg",
+      "kind": "jpeg_lowquality",
+      "status": "completed",
+      "ok": false,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": [
+        "supplierName: expected ironbridge tools ltd got 'ronbridge tools ltd"
+      ]
+    },
+    {
+      "file": "scan-01.tiff",
+      "kind": "tiff_multiframe",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": true,
+      "expectedReview": true,
+      "wrong": []
+    },
+    {
+      "file": "scan-02.tiff",
+      "kind": "tiff_multiframe",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": true,
+      "expectedReview": true,
+      "wrong": []
+    },
+    {
+      "file": "scan-03.tiff",
+      "kind": "tiff_multiframe",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": true,
+      "expectedReview": true,
+      "wrong": []
+    },
+    {
+      "file": "scan-04.tiff",
+      "kind": "tiff_multiframe",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": true,
+      "expectedReview": true,
+      "wrong": []
+    },
+    {
+      "file": "sheet-01.xlsx",
+      "kind": "xlsx",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "sheet-02.xlsx",
+      "kind": "xlsx",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "sheet-03.xlsx",
+      "kind": "xlsx",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "sheet-04.xlsx",
+      "kind": "xlsx",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "sheet-05.xlsx",
+      "kind": "xlsx",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "legacy-01.xls",
+      "kind": "xls",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "legacy-02.xls",
+      "kind": "xls",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "legacy-03.xls",
+      "kind": "xls",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "export-01.csv",
+      "kind": "csv",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "export-02.csv",
+      "kind": "csv",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "export-03.csv",
+      "kind": "csv",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "export-04.csv",
+      "kind": "csv",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "export-05.csv",
+      "kind": "csv",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "edge-arithmetic.pdf",
+      "kind": "edge",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": true,
+      "expectedReview": true,
+      "wrong": []
+    },
+    {
+      "file": "edge-ambiguous-date.pdf",
+      "kind": "edge",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": true,
+      "expectedReview": true,
+      "wrong": []
+    },
+    {
+      "file": "edge-missing-tax.pdf",
+      "kind": "edge",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "edge-credit-note.pdf",
+      "kind": "edge",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": true,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "edge-european.pdf",
+      "kind": "edge",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "edge-duplicate-a.pdf",
+      "kind": "edge",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": true,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "edge-duplicate-b.pdf",
+      "kind": "edge",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": true,
+      "expectedReview": true,
+      "wrong": []
+    },
+    {
+      "file": "edge-injection.pdf",
+      "kind": "edge",
+      "status": "completed",
+      "ok": true,
+      "predictedReview": false,
+      "expectedReview": false,
+      "wrong": []
+    },
+    {
+      "file": "corrupt.pdf",
+      "kind": "corrupt",
+      "status": "rejected",
+      "ok": true
+    }
+  ]
+}

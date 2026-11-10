@@ -168,3 +168,35 @@ describe('DocumentProcessingService', () => {
     expect((await repos.documents.listIssues(theirs.doc.id)).map((i) => i.code)).not.toContain('DUPLICATE_INVOICE_CANDIDATE');
   });
 });
+
+describe('DocumentProcessingService (concurrency)', () => {
+  it('flags both documents when duplicates are processed at the same time', async () => {
+    const repos = createMemoryRepositories();
+    const storage = new LocalObjectStorage(mkdtempSync(join(tmpdir(), 'docint-race-')));
+    const gate = new Promise<void>((resolve) => setTimeout(resolve, 20));
+    const processor: DocumentProcessorPort = {
+      ping: async () => undefined,
+      process: async (body) => { for await (const c of body) void c; await gate; return response([textPage(1, INVOICE)]); },
+    };
+    const svc = new DocumentProcessingService(repos, storage, processor, new RulesInvoiceExtractor(), SILENT);
+    const owner = (await repos.users.create({ email: 'race@x.io', passwordHash: 'h', role: 'uploader' })).id;
+    const make = async (name: string) => {
+      const key = newStorageKey(randomUUID());
+      await storage.put(key, Readable.from(Buffer.from(name)));
+      let msg!: QueueMessage;
+      const doc = await repos.documents.createWithOutbox(
+        { ownerId: owner, originalFilename: name, detectedMime: 'application/pdf', byteSize: 1, sha256: randomUUID(), storageKey: key, storageProvider: 'local', idempotencyKey: null },
+        (documentId, attemptId) => { msg = { messageId: randomUUID(), jobType: 'document.process', schemaVersion: 1, documentId, attemptId, correlationId: 'corr-race-001', idempotencyKey: `${documentId}:${attemptId}`, createdAt: new Date().toISOString(), payload: {} }; return { topic: 'document.process', payload: {} }; },
+      );
+      return { doc, msg };
+    };
+    const a = await make('a.pdf'); const b = await make('b.pdf');
+    await Promise.all([svc.handle(a.msg, ctx()), svc.handle(b.msg, ctx())]);
+    for (const [self, other] of [[a, b], [b, a]] as const) {
+      const issues = (await repos.documents.listIssues(self.doc.id)).filter((i) => i.code === 'DUPLICATE_INVOICE_CANDIDATE');
+      expect(issues).toHaveLength(1);
+      expect(issues[0]?.details['documentId']).toBe(other.doc.id);
+      expect((await repos.documents.findById(self.doc.id))?.reviewStatus).toBe('pending');
+    }
+  });
+});

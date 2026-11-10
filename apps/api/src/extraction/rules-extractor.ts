@@ -1,5 +1,6 @@
 import { detectCurrency, parseAmount, parseDate } from './normalizers.js';
-import { COMPANY_SUFFIX_RE, DUE_DATE_RE, LABELS, SUBTOTAL_RE, TAX_RE, TOTAL_PRIORITY } from './labels.js';
+import { COMPANY_SUFFIX_RE, DUE_DATE_RE, LABELLED_LINE_RE, LABELS, SUBTOTAL_RE, TAX_RE, TOTAL_PRIORITY } from './labels.js';
+import { normalizeKey } from '../domain/normalize.js';
 import type { Evidence, InvoiceData, InvoiceField, LineItem } from '../domain/types.js';
 import type { Block, ProcessResponse } from '../processing/processor.types.js';
 import type { ExtractionNote, ExtractionResult, InvoiceExtractorPort } from './types.js';
@@ -7,6 +8,7 @@ import type { ExtractionNote, ExtractionResult, InvoiceExtractorPort } from './t
 interface Line { text: string; page: number | null; sheet: string | null; ref: string | null; confidence: number | null }
 const AMOUNT_RE = /[-(−]?\s*(?:[A-Za-z]{3}\s*)?[$€£¥₹৳]?\s*\d{1,3}(?:[ ,.']\d{3})+(?:[.,]\d{1,2})?\)?-?|[-(−]?\s*[$€£¥₹৳]?\s*\d+(?:[.,]\d{1,2})?\)?-?/;
 const DATE_RE = /\d{4}[-/.]\d{1,2}[-/.]\d{1,2}|\d{1,2}(?:st|nd|rd|th)?[-/. ][A-Za-z]{3,9}[-/. ,]+\d{4}|[A-Za-z]{3,9}\.?\s+\d{1,2}(?:st|nd|rd|th)?,?\s+\d{4}|\d{1,2}[-/.]\d{1,2}[-/.]\d{4}/;
+const INVOICE_NO_LINE_RE = /\b(?:tax\s+)?(?:invoice|inv|bill|credit\s+note)\s*(?:no\.?|number|num|#|id|ref)?\s*[:#.\-]*\s*([A-Z0-9][A-Z0-9\-/_.]{2,40})/i;
 const NUMBER_RE = /\b([A-Z0-9][A-Z0-9\-/_.]{1,40})\b/i;
 
 const clip = (s: string, n = 200) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
@@ -87,7 +89,8 @@ export class RulesInvoiceExtractor implements InvoiceExtractorPort {
   extract(input: ProcessResponse): ExtractionResult {
     const data = emptyData();
     const notes: ExtractionNote[] = [];
-    const lines = toLines(input.blocks);
+    const all = toLines(input.blocks);
+    const lines = this.firstInvoiceOnly(all, notes);
     const tables = findTables(input.blocks);
 
     const set = (field: InvoiceField, value: string, line: Line) => {
@@ -102,6 +105,27 @@ export class RulesInvoiceExtractor implements InvoiceExtractorPort {
     data.lineItems = tables.lines ? this.tableLineItems(tables.lines) : this.textLineItems(lines);
     this.currency(lines, data, set);
     return { data, notes };
+  }
+
+  /**
+   * A file may hold several invoices (e.g. a multi-frame TIFF). Extract from the first one only and report the rest,
+   * instead of letting a later invoice silently overwrite totals.
+   */
+  private firstInvoiceOnly(lines: Line[], notes: ExtractionNote[]): Line[] {
+    const seen: { key: string; index: number }[] = [];
+    lines.forEach((l, index) => {
+      if (l.page === null) return;
+      const m = INVOICE_NO_LINE_RE.exec(l.text);
+      const key = m && /\d/.test(m[1]!) && !/^\d{1,2}[-/.]\d{1,2}[-/.]\d{2,4}$/.test(m[1]!) ? normalizeKey(m[1]) : null;
+      if (key && !seen.some((s) => s.key === key)) seen.push({ key, index });
+    });
+    if (seen.length < 2) return lines;
+    const second = seen[1]!;
+    const firstPage = lines[seen[0]!.index]!.page;
+    const secondPage = lines[second.index]!.page;
+    const cut = secondPage !== firstPage ? lines.findIndex((l) => l.page === secondPage) : second.index;
+    notes.push({ code: 'MULTIPLE_INVOICES', detail: { count: seen.length } });
+    return lines.slice(0, cut);
   }
 
   private documentType(data: InvoiceData, lines: Line[]): void {
@@ -166,7 +190,7 @@ export class RulesInvoiceExtractor implements InvoiceExtractorPort {
     lines.forEach((line, i) => {
       const text = line.text;
       if (!data.invoiceNumber) {
-        const m = /\b(?:tax\s+)?(?:invoice|inv|bill|credit\s+note)\s*(?:no\.?|number|num|#|id|ref)?\s*[:#.\-]*\s*([A-Z0-9][A-Z0-9\-/_.]{2,40})/i.exec(text);
+        const m = INVOICE_NO_LINE_RE.exec(text);
         if (m && /\d/.test(m[1]!) && !/^\d{1,2}[-/.]\d{1,2}[-/.]\d{2,4}$/.test(m[1]!)) set('invoiceNumber', m[1]!.replace(/[.\-/_]+$/, ''), line);
       }
       if (!data.invoiceDate) {
@@ -196,7 +220,7 @@ export class RulesInvoiceExtractor implements InvoiceExtractorPort {
     });
     if (bestTotal && data.totalAmount === null) set('totalAmount', (bestTotal as { amount: string }).amount, (bestTotal as { line: Line }).line);
     if (!data.supplierName) {
-      const first = lines.slice(0, 8).find((l) => l.page !== null && COMPANY_SUFFIX_RE.test(l.text) && !/\d{3,}/.test(l.text) && l.text.length <= 80 && !/\binvoice\b/i.test(l.text));
+      const first = lines.slice(0, 8).find((l) => l.page !== null && COMPANY_SUFFIX_RE.test(l.text) && !LABELLED_LINE_RE.test(l.text) && !/\d{3,}/.test(l.text) && l.text.length <= 80 && !/\binvoice\b/i.test(l.text));
       if (first) set('supplierName', first.text, first);
     }
   }

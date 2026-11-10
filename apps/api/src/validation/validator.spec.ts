@@ -101,3 +101,11 @@ describe('compareInvoices', () => {
     expect(c.compared).not.toContain('customerName');
   });
 });
+
+describe('validateInvoice (multiple invoices in one file)', () => {
+  it('warns and requires review', () => {
+    const r = validateInvoice(invoiceFixture(), { notes: [{ code: 'MULTIPLE_INVOICES', detail: { count: 2 } }], now: new Date('2026-06-01T00:00:00Z') });
+    expect(r.issues.map((i) => i.code)).toContain(ISSUE.MULTIPLE_INVOICES);
+    expect(r.requiresManualReview).toBe(true);
+  });
+});

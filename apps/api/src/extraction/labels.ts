@@ -23,4 +23,6 @@ export const TOTAL_PRIORITY: { re: RegExp; rank: number }[] = [
 export const SUBTOTAL_RE = /\b(?:sub[\s-]?total|net\s+(?:amount|total)|total\s+(?:excl\w*|before)\s*(?:tax|vat|gst)?)\b/i;
 export const TAX_RE = /^\s*(?:sales\s+)?(?:tax|vat|gst|igst|cgst|sgst)\b(?!\s*(?:invoice|id|no\b|number|reg|registration))(?:\s*\(?\s*\d+(?:\.\d+)?\s*%\)?)?/i;
 export const DUE_DATE_RE = /\bdue\b/i;
-export const COMPANY_SUFFIX_RE = /\b(?:ltd\.?|limited|llc|inc\.?|incorporated|gmbh|corp\.?|corporation|co\.|plc|pty|s\.?a\.?|ag|b\.?v\.?|pvt|s\.?r\.?l\.?|oy|ab)\b/i;
+export const COMPANY_SUFFIX_RE = /(?:^|[\s,])(?:ltd|limited|llc|inc|incorporated|gmbh|corp|corporation|co|plc|pty|sa|s\.a|ag|bv|b\.v|pvt|srl|s\.r\.l|oy|ab)\.?(?=$|[\s,)])/i;
+/** Lines such as `Customer: Globex` are labelled values, never a bare supplier header. */
+export const LABELLED_LINE_RE = /^[A-Za-z][\w\s#.\-/]{0,30}:\s/;

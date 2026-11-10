@@ -17,13 +17,14 @@ import { DOCUMENT_PROCESSOR, ProcessingModule, processorHealthProbe } from './pr
 import type { DocumentProcessorPort } from './processing/processor.client.js';
 import { PersistenceModule, REPOSITORIES, databaseHealthProbe } from './persistence.module.js';
 import { QUEUE, QueueModule, queueHealthProbe } from './queue.module.js';
+import { SearchModule } from './search/search.module.js';
 import { STORAGE, StorageModule, storageHealthProbe } from './storage.module.js';
 
 const RATE_LIMIT = Number(process.env['RATE_LIMIT_PER_MINUTE'] ?? 120);
 
 @Module({
   imports: [
-    ConfigModule, PersistenceModule, QueueModule, StorageModule, ProcessingModule, AuthModule, DocumentsModule,
+    ConfigModule, PersistenceModule, QueueModule, StorageModule, ProcessingModule, AuthModule, DocumentsModule, SearchModule,
     ThrottlerModule.forRoot([{ name: 'default', ttl: 60_000, limit: RATE_LIMIT }]),
   ],
   controllers: [HealthController],

@@ -9,7 +9,7 @@ export const ISSUE = {
   INVALID_CURRENCY: 'INVALID_CURRENCY', INVALID_AMOUNT: 'INVALID_AMOUNT', NEGATIVE_AMOUNT: 'NEGATIVE_AMOUNT', IMPLAUSIBLE_AMOUNT: 'IMPLAUSIBLE_AMOUNT',
   TOTAL_MISMATCH: 'TOTAL_MISMATCH', LINE_SUM_MISMATCH: 'LINE_SUM_MISMATCH', LINE_ARITHMETIC_MISMATCH: 'LINE_ARITHMETIC_MISMATCH',
   DUPLICATE_INVOICE_CANDIDATE: 'DUPLICATE_INVOICE_CANDIDATE', DUPLICATE_FILE: 'DUPLICATE_FILE', CROSS_DOCUMENT_MISMATCH: 'CROSS_DOCUMENT_MISMATCH',
-  CROSS_DOCUMENT_MATCH: 'CROSS_DOCUMENT_MATCH', LOW_CONFIDENCE_FIELD: 'LOW_CONFIDENCE_FIELD', MULTIPLE_RECORDS: 'MULTIPLE_RECORDS', NOT_AN_INVOICE: 'NOT_AN_INVOICE',
+  CROSS_DOCUMENT_MATCH: 'CROSS_DOCUMENT_MATCH', LOW_CONFIDENCE_FIELD: 'LOW_CONFIDENCE_FIELD', MULTIPLE_RECORDS: 'MULTIPLE_RECORDS', MULTIPLE_INVOICES: 'MULTIPLE_INVOICES', NOT_AN_INVOICE: 'NOT_AN_INVOICE',
 } as const;
 
 export const REQUIRED_FIELDS = ['invoiceNumber', 'invoiceDate', 'supplierName', 'totalAmount', 'currency'] as const;
@@ -56,6 +56,9 @@ export function validateInvoice(data: InvoiceData, ctx: ValidationContext = {}):
     }
   }
   if (data.customerName === null && data.documentType !== 'unknown') out.push(issue(ISSUE.MISSING_REQUIRED, 'info', 'Customer name was not found.', ['customerName']));
+
+  const multi = notes.find((n) => n.code === 'MULTIPLE_INVOICES');
+  if (multi) out.push(issue(ISSUE.MULTIPLE_INVOICES, 'warning', `This file contains ${String(multi.detail?.['count'])} different invoices. Only the first was extracted; split the file to process the others.`, [], multi.detail ?? {}));
 
   // dates
   for (const n of notes) {
@@ -121,16 +124,7 @@ export function validateInvoice(data: InvoiceData, ctx: ValidationContext = {}):
   }
 
   // duplicates and cross-document comparison
-  for (const dup of ctx.duplicates ?? []) {
-    const other = dup.result.current;
-    const reasons = ['same invoice number'];
-    if (normalizeKey(data.supplierName) && normalizeKey(data.supplierName) === normalizeKey(other.supplierName)) reasons.push('same supplier');
-    if (data.invoiceDate && data.invoiceDate === other.invoiceDate) reasons.push('same invoice date');
-    const a = parseDecimal(data.totalAmount); const b = parseDecimal(other.totalAmount);
-    if (a && b && withinTolerance(a, b, data.currency)) reasons.push('same total');
-    out.push(issue(ISSUE.DUPLICATE_INVOICE_CANDIDATE, 'warning', `Possible duplicate of "${dup.document.originalFilename}" (${reasons.join(', ')}). Nothing was merged or deleted.`, ['invoiceNumber'],
-      { documentId: dup.document.id, filename: dup.document.originalFilename, reasons, differences: compareInvoices(data, other).differences }));
-  }
+  for (const dup of ctx.duplicates ?? []) out.push(duplicateIssue(data, dup));
   for (const f of ctx.sameFile ?? []) {
     out.push(issue(ISSUE.DUPLICATE_FILE, 'info', `This exact file was already uploaded as "${f.originalFilename}".`, [], { documentId: f.id }));
   }
@@ -152,4 +146,16 @@ export function crossDocumentIssues(matches: CrossDocumentMatch[], currency: str
     }
   }
   return out;
+}
+
+/** A possible duplicate of `dup`. Never merges or deletes anything; lists why the two look alike and how they differ. */
+export function duplicateIssue(data: InvoiceData, dup: { document: DocumentRecord; result: ResultRecord }): NewIssue {
+  const other = dup.result.current;
+  const reasons = ['same invoice number'];
+  if (normalizeKey(data.supplierName) && normalizeKey(data.supplierName) === normalizeKey(other.supplierName)) reasons.push('same supplier');
+  if (data.invoiceDate && data.invoiceDate === other.invoiceDate) reasons.push('same invoice date');
+  const a = parseDecimal(data.totalAmount); const b = parseDecimal(other.totalAmount);
+  if (a && b && withinTolerance(a, b, data.currency)) reasons.push('same total');
+  return issue(ISSUE.DUPLICATE_INVOICE_CANDIDATE, 'warning', `Possible duplicate of "${dup.document.originalFilename}" (${reasons.join(', ')}). Nothing was merged or deleted.`, ['invoiceNumber'],
+    { documentId: dup.document.id, filename: dup.document.originalFilename, reasons, differences: compareInvoices(data, other).differences });
 }

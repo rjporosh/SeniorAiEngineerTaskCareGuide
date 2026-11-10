@@ -303,7 +303,7 @@ class PgDocuments implements DocumentRepository {
   async searchKeyword(q: string, f: DocumentFilters, page: PageQuery) {
     const rows = await this.db.$queryRaw<Parameters<PgDocuments['toHits']>[0]>`
       SELECT c.id, c.document_id, c.page, c.sheet, c.range, c.content,
-             ts_headline('simple', c.content, tq.q, 'MaxFragments=1,MinWords=8,MaxWords=30') AS snippet,
+             left(c.content, 240) AS snippet,
              ts_rank(c.tsv, tq.q)::float8 AS score, count(*) OVER() AS total
       FROM text_chunks c JOIN documents d ON d.id = c.document_id,
            LATERAL (SELECT plainto_tsquery('simple', ${q}) AS q) tq

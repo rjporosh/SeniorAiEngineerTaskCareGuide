@@ -1,9 +1,11 @@
-import { Controller, Get, Headers, HttpCode, Inject, Param, ParseUUIDPipe, Post, Query, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, Headers, HttpCode, Inject, Param, ParseUUIDPipe, Patch, Post, Query, Req, Res } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { CurrentUser, RawResponse, Roles, type AuthUser } from '../common/decorators.js';
 import { ZodPipe } from '../common/zod.pipe.js';
 import { DocumentsService } from './documents.service.js';
 import { listQuerySchema, type ListQueryDto } from './documents.schemas.js';
+import { correctionSchema, resolveIssueSchema, type CorrectionDto, type ResolveIssueDto } from './review.schemas.js';
+import { ReviewService } from './review.service.js';
 import { UploadService } from './upload.service.js';
 
 const IDEMPOTENCY = /^[A-Za-z0-9._:-]{8,128}$/;
@@ -13,6 +15,7 @@ export class DocumentsController {
   constructor(
     @Inject(DocumentsService) private readonly docs: DocumentsService,
     @Inject(UploadService) private readonly upload: UploadService,
+    @Inject(ReviewService) private readonly review: ReviewService,
   ) {}
 
   @Post('documents') @HttpCode(201)
@@ -33,6 +36,20 @@ export class DocumentsController {
 
   @Get('documents/:id/history')
   history(@CurrentUser() u: AuthUser, @Param('id', new ParseUUIDPipe()) id: string) { return this.docs.history(u, id); }
+
+  @Patch('documents/:id/corrections') @Roles('admin', 'reviewer')
+  correct(@CurrentUser() u: AuthUser, @Param('id', new ParseUUIDPipe()) id: string, @Body(new ZodPipe(correctionSchema)) dto: CorrectionDto) { return this.review.correct(u, id, dto); }
+
+  @Patch('documents/:id/issues/:issueId') @Roles('admin', 'reviewer')
+  resolve(@CurrentUser() u: AuthUser, @Param('id', new ParseUUIDPipe()) id: string, @Param('issueId', new ParseUUIDPipe()) issueId: string, @Body(new ZodPipe(resolveIssueSchema)) dto: ResolveIssueDto) {
+    return this.review.resolveIssue(u, id, issueId, dto);
+  }
+
+  @Post('documents/:id/reprocess') @HttpCode(202)
+  reprocess(@CurrentUser() u: AuthUser, @Param('id', new ParseUUIDPipe()) id: string, @Headers('idempotency-key') key?: string) {
+    return this.review.reprocess(u, id, key && IDEMPOTENCY.test(key) ? key : undefined);
+  }
+
 
   @Get('jobs/:id')
   job(@CurrentUser() u: AuthUser, @Param('id', new ParseUUIDPipe()) id: string) { return this.docs.job(u, id); }

@@ -130,3 +130,29 @@ describe('RulesInvoiceExtractor (spreadsheets)', () => {
     expect(notes).toContainEqual({ code: 'MULTIPLE_RECORDS', detail: { count: 2, sheet: 'Ledger' } });
   });
 });
+
+describe('RulesInvoiceExtractor (regressions found by the evaluation)', () => {
+  it('recognises "Co." and "Pty" style suffixes for the supplier header', () => {
+    expect(pdf('CEDAR & PINE FURNITURE CO.\nINVOICE\nInvoice No: INV-1\nTotal: 1.00').data.supplierName).toBe('CEDAR & PINE FURNITURE CO.');
+  });
+
+  it('never takes a labelled line (e.g. "Customer: Globex Corporation") as the supplier', () => {
+    const { data } = pdf('INVOICE\nInvoice No: INV-1\nCustomer: Globex Corporation\nTotal: 1.00');
+    expect(data.supplierName).toBeNull();
+    expect(data.customerName).toBe('Globex Corporation');
+  });
+
+  it('extracts only the first invoice from a multi-invoice file and reports the others', () => {
+    const r = x.extract(response([
+      textPage(1, 'ACME LTD\nInvoice No: INV-100\nTotal Due: USD 10.00'),
+      textPage(2, 'BETA LLC\nInvoice No: INV-200\nTotal Due: GBP 99.00'),
+    ]));
+    expect(r.data).toMatchObject({ invoiceNumber: 'INV-100', totalAmount: '10', currency: 'USD', supplierName: 'ACME LTD' });
+    expect(r.notes).toContainEqual({ code: 'MULTIPLE_INVOICES', detail: { count: 2 } });
+  });
+
+  it('does not treat a repeated invoice number as a second invoice', () => {
+    const r = x.extract(response([textPage(1, 'Invoice No: INV-100\nTotal: 10.00'), textPage(2, 'Invoice No: INV-100 (page 2)\nTotal Due: 10.00')]));
+    expect(r.notes).toEqual([]);
+  });
+});

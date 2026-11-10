@@ -3,13 +3,11 @@ import type { Repositories } from '../application/ports.js';
 import { PermanentJobError, type DeliveryContext, type QueueMessage } from '../application/queue.js';
 import type { ObjectStoragePort } from '../application/storage.js';
 import { hashEmbedding } from '../domain/embedding.js';
-import { normalizeKey } from '../domain/normalize.js';
 import type { AttemptRecord, DocumentRecord, InvoiceData, NewIssue, ProcessingStatus } from '../domain/types.js';
 import type { InvoiceExtractorPort } from '../extraction/types.js';
 import { runWithContext } from '../common/request-context.js';
-import { validateInvoice } from '../validation/validator.js';
 import { chunkBlocks, summaryChunk } from './chunker.js';
-import { CrossDocumentService, isTabular } from './cross-document.js';
+import { DocumentValidator } from './document-validator.js';
 import { failureMessage, REJECTION_CODES } from './failure-messages.js';
 import { ProcessorError, type DocumentProcessorPort } from './processor.client.js';
 import type { ProcessResponse } from './processor.types.js';
@@ -21,14 +19,14 @@ export interface Logger2 { log(m: string): void; warn(m: string): void; error(m:
  * and the message is acknowledged only after durable state (result, issues, chunks, status) has been written.
  */
 export class DocumentProcessingService {
-  private readonly cross: CrossDocumentService;
   constructor(
     private readonly repos: Repositories,
     private readonly storage: ObjectStoragePort,
     private readonly processor: DocumentProcessorPort,
     private readonly extractor: InvoiceExtractorPort,
     private readonly log: Logger2 = new Logger('Processing'),
-  ) { this.cross = new CrossDocumentService(repos); }
+    private readonly validator: DocumentValidator = new DocumentValidator(repos),
+  ) {}
 
   handle = async (msg: QueueMessage, ctx: DeliveryContext): Promise<void> => runWithContext({ correlationId: msg.correlationId }, async () => {
     const attempt = await this.repos.documents.findAttempt(msg.attemptId);
@@ -61,26 +59,20 @@ export class DocumentProcessingService {
     const { data, notes } = this.extractor.extract(processed);
 
     await this.stage(doc, attempt, 'validating_result');
-    const tabular = isTabular(doc);
-    const [duplicates, sameFile] = await Promise.all([
-      data.invoiceNumber ? this.repos.documents.findDuplicateCandidates({ documentId: doc.id, ownerId: doc.ownerId, supplierKey: normalizeKey(data.supplierName), invoiceNumberKey: normalizeKey(data.invoiceNumber) }) : [],
-      this.repos.documents.findBySha256(doc.ownerId, doc.sha256, doc.id),
-    ]);
-    const sheetCross = tabular ? await this.cross.forSpreadsheet(doc, processed.blocks) : { own: [], peers: [] };
-    const crossDocuments = tabular ? sheetCross.own : await this.cross.forDocumentInvoice(doc, data);
-    const outcome = validateInvoice(data, { notes, duplicates: tabular ? [] : duplicates, sameFile, crossDocuments });
+    const { outcome, peers } = await this.validator.validate(doc, data, notes, processed.blocks);
     data.requiresManualReview = outcome.requiresManualReview;
 
     const result = await this.repos.documents.saveResult({ documentId: doc.id, attemptId: attempt.id, data, extractor: this.extractor.info });
     await this.repos.documents.replaceIssues(doc.id, outcome.issues);
     await this.indexChunks(doc.id, processed, data);
-    await this.notifyPeers(doc.id, sheetCross.peers);
+    await this.notifyPeers(doc.id, peers);
 
     await this.repos.documents.updateStatus(doc.id, 'indexed');
     await this.repos.documents.updateAttemptStage(attempt.id, 'indexed');
     await this.repos.documents.updateStatus(doc.id, 'completed', {
       failureCode: null, failureMessage: null, documentType: data.documentType, reviewStatus: outcome.requiresManualReview ? 'pending' : 'not_required',
     });
+    await this.validator.reconcileDuplicates(doc, data);
     await this.repos.documents.finishAttempt(attempt.id, { status: 'succeeded' });
     await this.repos.documents.addAudit({ documentId: doc.id, actorId: null, eventType: 'document.processed', metadata: { attempt: attempt.attemptNumber, resultId: result.id, issues: outcome.issues.length, ms: Date.now() - started, kind: processed.file_kind } });
     this.log.log(`document ${doc.id} completed in ${Date.now() - started}ms (${outcome.issues.length} issue(s), review=${outcome.requiresManualReview})`);
