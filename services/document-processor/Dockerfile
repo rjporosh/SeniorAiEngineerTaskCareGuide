@@ -19,6 +19,8 @@ COPY tests tests
 CMD ["pytest", "-q", "--timeout=300", "-p", "no:cacheprovider"]
 
 FROM base AS runtime
+# pip (with its vendored urllib3/msgpack) is only needed to install dependencies; the running service never uses it.
+RUN python -m pip uninstall -y pip >/dev/null 2>&1; rm -rf /usr/local/lib/python3.13/site-packages/pip* /usr/local/bin/pip*
 RUN useradd --system --uid 10001 --home /nonexistent --shell /usr/sbin/nologin processor
 COPY app app
 USER 10001
