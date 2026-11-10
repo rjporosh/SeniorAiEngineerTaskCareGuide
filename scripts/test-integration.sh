@@ -24,5 +24,7 @@ export TEST_RABBITMQ_URL="amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PAS
 export TEST_REDIS_URL="redis://127.0.0.1:56379"
 export PRISMA_HIDE_UPDATE_MESSAGE=1
 
+# The Prisma client is generated (and git-ignored): make sure it exists, e.g. on a fresh clone or in CI.
+pnpm --filter @docint/api db:generate
 pnpm --filter @docint/api exec prisma migrate deploy
 pnpm --filter @docint/api test:int "$@"

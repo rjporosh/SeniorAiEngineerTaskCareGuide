@@ -34,6 +34,17 @@ DATABASE_URL=… pnpm --filter @docint/api exec prisma migrate diff --from-confi
 
 Rollback: Prisma migrations are forward-only. To undo a change, write a new migration that reverses it (and restore from backup if data was lost). MongoDB has no SQL migrations; indexes are created on connect (`mongo.repositories.ts`).
 
+## Python dependencies (processor)
+
+`services/document-processor/requirements.txt` lists the direct dependencies; `requirements.lock` pins the complete resolved set and is what the image installs (`pip install --no-deps -r requirements.lock`), so builds are reproducible and auditable. After changing `requirements.txt`, regenerate the lock:
+
+```bash
+docker run --rm -v "$PWD/services/document-processor:/w" python:3.13-slim sh -c \
+  "pip install -q -r /w/requirements.txt && pip freeze | grep -vE '^(pip|setuptools|wheel)==' | sort > /w/requirements.lock"
+```
+
+CI runs `pip-audit` against the lock. PyMuPDF is pinned to the 1.x line because 2.x is a meta-package that also installs ONNX Runtime and other packages this service does not use.
+
 ## Backup and restore
 
 ```bash

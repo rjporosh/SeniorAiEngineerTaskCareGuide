@@ -3,11 +3,13 @@ FROM python:3.13-slim AS base
 # which made OCR time out on small CI runners. Parallelism comes from PROCESSOR_CONCURRENCY instead.
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1 OMP_THREAD_LIMIT=1
 RUN apt-get update \
+ && apt-get upgrade -y \
  && apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-eng fonts-dejavu-core curl \
  && rm -rf /var/lib/apt/lists/*
 WORKDIR /srv
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+# requirements.txt lists direct dependencies; requirements.lock pins the complete resolved set (reproducible, auditable).
+COPY requirements.txt requirements.lock ./
+RUN pip install --no-deps -r requirements.lock
 
 FROM base AS test
 COPY requirements-dev.txt .
