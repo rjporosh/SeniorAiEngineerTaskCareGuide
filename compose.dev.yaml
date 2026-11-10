@@ -1,0 +1,13 @@
+# Local developer overlay: publishes infrastructure ports on loopback only.
+#   docker compose -f compose.yaml -f compose.dev.yaml up -d postgres rabbitmq minio
+services:
+  postgres:
+    ports: ["127.0.0.1:55432:5432"]
+  rabbitmq:
+    ports: ["127.0.0.1:55672:5672", "127.0.0.1:55673:15672"]
+  minio:
+    ports: ["127.0.0.1:59000:9000"]
+  mongo:
+    ports: ["127.0.0.1:57017:27017"]
+  redis:
+    ports: ["127.0.0.1:56379:6379"]

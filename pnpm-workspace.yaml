@@ -4,3 +4,8 @@ packages:
 allowBuilds:
   esbuild: true
   "@scarf/scarf": false
+  "@prisma/engines": true
+  prisma: true
+  "@prisma/client": true
+minimumReleaseAgeExclude:
+  - mongoose@9.12.1

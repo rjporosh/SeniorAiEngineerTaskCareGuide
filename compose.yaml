@@ -7,9 +7,19 @@ services:
     networks: [internal]
     restart: unless-stopped
     depends_on:
-      postgres: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
       rabbitmq: { condition: service_healthy }
       minio: { condition: service_healthy }
+
+  # One-shot: applies SQL migrations when DATABASE_PROVIDER=postgres (no-op otherwise).
+  migrate:
+    build: { context: ., dockerfile: apps/api/Dockerfile }
+    command: ["node", "migrate.mjs"]
+    env_file: .env
+    networks: [internal]
+    restart: "no"
+    depends_on:
+      postgres: { condition: service_healthy, required: false }
 
   postgres:
     image: pgvector/pgvector:pg18

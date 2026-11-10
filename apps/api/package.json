@@ -4,26 +4,38 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build": "prisma generate && tsc -p tsconfig.build.json",
+    "typecheck": "prisma generate && tsc -p tsconfig.json --noEmit",
     "lint": "eslint src",
     "test": "vitest run",
     "start": "node dist/main.js",
-    "dev": "tsx watch src/main.ts"
+    "dev": "tsx watch src/main.ts",
+    "test:int": "VITEST_INTEGRATION=1 vitest run",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate deploy",
+    "db:migrate:dev": "prisma migrate dev",
+    "migrate": "node scripts/migrate.mjs"
   },
   "dependencies": {
     "@nestjs/common": "12.4.2",
     "@nestjs/core": "12.4.2",
     "@nestjs/platform-express": "12.4.2",
     "@nestjs/swagger": "12.1.1",
+    "@prisma/adapter-pg": "7.10.1",
+    "@prisma/client": "7.10.1",
+    "decimal.js": "10.6.0",
+    "mongoose": "9.12.1",
+    "pg": "^8.23.1",
     "pino": "10.4.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
-    "zod": "4.6.7"
+    "zod": "4.6.7",
+    "prisma": "7.10.1"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^26.6.6",
+    "@types/pg": "^8.23.1",
     "eslint": "10.14.0",
     "tsx": "^4.23.15",
     "typescript": "7.0.2",

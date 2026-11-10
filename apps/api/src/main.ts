@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
-import { AppModule, APP_CONFIG } from './app.module.js';
+import { AppModule } from './app.module.js';
+import { APP_CONFIG } from './app.tokens.js';
 import type { AppConfig } from './config/env.schema.js';
 
 async function bootstrap(): Promise<void> {
