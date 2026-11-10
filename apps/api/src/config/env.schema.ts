@@ -34,10 +34,13 @@ export const envSchema = z
     S3_SECRET_KEY: z.string().optional(),
 
     WORKER_ENABLED: z.enum(['true', 'false']).default('true').transform((v) => v === 'true'),
-    PROCESSOR_BASE_URL: z.string().default('http://processor:8000'),
+    // Hosting platforms often provide an internal address as bare `host:port`; assume plain HTTP on the private network.
+    PROCESSOR_BASE_URL: z.string().default('http://processor:8000').transform((v) => (/^https?:\/\//.test(v) ? v : `http://${v}`).replace(/\/+$/, '')),
     PROCESSOR_SERVICE_TOKEN: z.string().min(16),
 
     METRICS_TOKEN: z.string().min(16).optional(),
+    SEED_DEMO_EMAIL: z.email().optional(),
+    SEED_DEMO_PASSWORD: z.string().min(12).optional(),
     SEED_ADMIN_EMAIL: z.email().optional(),
     SEED_ADMIN_PASSWORD: z.string().min(12).optional(),
     API_DOCS_ENABLED: z.enum(['true', 'false']).default('false').transform((v) => v === 'true'),

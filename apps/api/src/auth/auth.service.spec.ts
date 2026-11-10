@@ -47,4 +47,15 @@ describe('AuthService', () => {
     await auth.createUser('a@x.io', PW, 'uploader');
     await expect(auth.createUser('A@X.IO', PW, 'admin')).rejects.toMatchObject({ code: 'EMAIL_TAKEN' });
   });
+  it('seeds the admin and a reviewer-only demo account once, without duplicating on restart', async () => {
+    const repos = createMemoryRepositories();
+    const tokens = new TokenService(cfg);
+    const seeded = { ...cfg, SEED_ADMIN_EMAIL: 'root@x.io', SEED_ADMIN_PASSWORD: 'admin-password-123', SEED_DEMO_EMAIL: 'demo@x.io', SEED_DEMO_PASSWORD: 'demo-password-123' } as AppConfig;
+    const svc = new AuthService(repos, new PasswordService(), tokens, seeded);
+    await svc.onApplicationBootstrap();
+    await svc.onApplicationBootstrap();
+    expect((await repos.users.findByEmail('root@x.io'))?.role).toBe('admin');
+    expect((await repos.users.findByEmail('demo@x.io'))?.role).toBe('reviewer');
+    expect((await svc.login('demo@x.io', 'demo-password-123')).user.role).toBe('reviewer');
+  });
 });

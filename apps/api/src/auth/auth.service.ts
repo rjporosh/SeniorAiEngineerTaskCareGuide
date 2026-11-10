@@ -25,12 +25,16 @@ export class AuthService implements OnApplicationBootstrap {
     @Inject(APP_CONFIG) private readonly cfg: AppConfig,
   ) {}
 
+  /** Creates the configured bootstrap accounts once. A demo account is a reviewer: it can upload, review and correct but cannot manage users. */
   async onApplicationBootstrap(): Promise<void> {
-    const { SEED_ADMIN_EMAIL: email, SEED_ADMIN_PASSWORD: password } = this.cfg;
-    if (!email || !password) return;
-    if (await this.repos.users.findByEmail(email)) return;
-    await this.createUser(email, password, 'admin');
-    this.log.log(`bootstrap admin ${email} created; remove SEED_ADMIN_* from the environment`);
+    await this.seed(this.cfg.SEED_ADMIN_EMAIL, this.cfg.SEED_ADMIN_PASSWORD, 'admin');
+    await this.seed(this.cfg.SEED_DEMO_EMAIL, this.cfg.SEED_DEMO_PASSWORD, 'reviewer');
+  }
+
+  private async seed(email: string | undefined, password: string | undefined, role: Role): Promise<void> {
+    if (!email || !password || (await this.repos.users.findByEmail(email))) return;
+    await this.createUser(email, password, role);
+    this.log.log(`bootstrap ${role} account ${email} created`);
   }
 
   async createUser(email: string, password: string, role: Role): Promise<UserRecord> {

@@ -15,7 +15,7 @@ services:
   web:
     build: { context: ., dockerfile: apps/web/Dockerfile }
     environment:
-      API_INTERNAL_URL: http://api:3001/api/v1
+      API_INTERNAL_URL: ${API_INTERNAL_URL:-http://api:3001/api/v1}
       COOKIE_SECURE: ${COOKIE_SECURE:-false}
     ports: ["${WEB_PUBLIC_PORT:-4001}:3000"]
     networks: [internal]

@@ -18,6 +18,10 @@ describe('loadConfig', () => {
     expect(c.QUEUE_PROVIDER).toBe('rabbitmq');
     expect(c.CORS_ORIGINS).toEqual(['http://localhost:3000']);
   });
+  it('accepts a bare host:port processor address from a hosting platform', () => {
+    expect(loadConfig({ ...base, PROCESSOR_BASE_URL: 'docint-processor:10000' }).PROCESSOR_BASE_URL).toBe('http://docint-processor:10000');
+    expect(loadConfig({ ...base, PROCESSOR_BASE_URL: 'https://p.example.com/' }).PROCESSOR_BASE_URL).toBe('https://p.example.com');
+  });
   it('fails fast on unknown provider', () => {
     expect(() => loadConfig({ ...base, DATABASE_PROVIDER: 'oracle' })).toThrow(ConfigError);
   });
