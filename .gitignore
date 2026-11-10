@@ -4,9 +4,9 @@
 !.env.example
 ai-handover.md
 # runtime data
-uploads/
-storage/
-logs/
+/uploads/
+/storage/
+/logs/
 *.log
 # deps & builds
 node_modules/
