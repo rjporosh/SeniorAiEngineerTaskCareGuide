@@ -32,3 +32,25 @@ The default local configuration should be PostgreSQL + RabbitMQ + MinIO. MongoDB
 ## Source assignment
 
 The project scope is based on the supplied `Ai Engineer Task 1.3.pdf`. The pack preserves its seven task areas and nine deliverables while adding explicit architecture, security, reliability and execution criteria.
+
+## Quick start (foundation milestone)
+
+```bash
+cp .env.example .env          # then replace every CHANGE_ME value (openssl rand -hex 32)
+docker compose up --build     # postgres(pgvector), rabbitmq, minio, api
+curl localhost:4000/api/v1/health/ready
+```
+
+Optional provider containers: `docker compose --profile mongodb up` (MongoDB), `--profile bullmq` (Redis).
+Host port of the API is `API_PUBLIC_PORT` (default 4000). Database/broker ports are not published.
+
+## Pinned versions (checked against the npm registry on 2026-11-10)
+
+Node 24 LTS image, NestJS 12.4.2, Zod 4.6.7, TypeScript 7.0.2, Vitest 5.1.0, pnpm 12.18.0,
+PostgreSQL 18 (pgvector image), RabbitMQ 4.1. Prisma CLI is pinned to the stable 7.10.1 line
+because the registry `latest` tag currently points at an 8.0 release candidate.
+
+## Known limitations
+
+- MinIO no longer publishes an official pullable image; Compose uses the frozen
+  `bitnamilegacy/minio` pinned tag. Use `OBJECT_STORAGE_PROVIDER=local` or your own S3 for production.
