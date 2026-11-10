@@ -36,6 +36,13 @@ export const envSchema = z
     PROCESSOR_BASE_URL: z.string().default('http://processor:8000'),
     PROCESSOR_SERVICE_TOKEN: z.string().min(16),
 
+    SEED_ADMIN_EMAIL: z.email().optional(),
+    SEED_ADMIN_PASSWORD: z.string().min(12).optional(),
+    API_DOCS_ENABLED: z.enum(['true', 'false']).default('false').transform((v) => v === 'true'),
+    TRUST_PROXY: z.enum(['true', 'false']).default('false').transform((v) => v === 'true'),
+    RATE_LIMIT_PER_MINUTE: z.coerce.number().int().min(1).default(120),
+    LOGIN_RATE_LIMIT_PER_MINUTE: z.coerce.number().int().min(1).default(10),
+
     JWT_ACCESS_SECRET: z.string().min(32),
     JWT_ACCESS_TTL_SECONDS: z.coerce.number().int().positive().default(900),
     JWT_REFRESH_TTL_SECONDS: z.coerce.number().int().positive().default(604800),

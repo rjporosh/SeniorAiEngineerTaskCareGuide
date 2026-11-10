@@ -1,7 +1,10 @@
 import { Controller, Get, HttpStatus, Inject, Res } from '@nestjs/common';
 import type { Response } from 'express';
+import { Public, RawResponse } from '../common/decorators.js';
 import { HEALTH_PROBES, type HealthProbe } from './health.tokens.js';
 
+@Public()
+@RawResponse()
 @Controller('health')
 export class HealthController {
   constructor(@Inject(HEALTH_PROBES) private readonly probes: HealthProbe[]) {}
