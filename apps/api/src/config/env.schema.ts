@@ -33,6 +33,7 @@ export const envSchema = z
     S3_ACCESS_KEY: z.string().optional(),
     S3_SECRET_KEY: z.string().optional(),
 
+    WORKER_ENABLED: z.enum(['true', 'false']).default('true').transform((v) => v === 'true'),
     PROCESSOR_BASE_URL: z.string().default('http://processor:8000'),
     PROCESSOR_SERVICE_TOKEN: z.string().min(16),
 

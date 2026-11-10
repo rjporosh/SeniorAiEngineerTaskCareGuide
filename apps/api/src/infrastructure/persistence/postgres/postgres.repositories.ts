@@ -251,6 +251,19 @@ class PgDocuments implements DocumentRepository {
   private toIssue(r: { id: string; documentId: string; code: string; severity: string; message: string; fields: string[]; details: unknown; resolution: string; createdAt: Date }): IssueRecord {
     return { id: r.id, documentId: r.documentId, code: r.code, severity: r.severity as IssueRecord['severity'], message: r.message, fields: r.fields, details: r.details as Record<string, unknown>, resolution: r.resolution as IssueRecord['resolution'], createdAt: r.createdAt };
   }
+  async appendIssues(documentId: string, issues: Parameters<DocumentRepository['appendIssues']>[1]) {
+    return this.db.$transaction(async (tx) => {
+      const out: IssueRecord[] = [];
+      for (const i of issues) {
+        const r = await tx.validationIssue.create({ data: { documentId, code: i.code, severity: i.severity, message: i.message, fields: i.fields, details: json(i.details) } });
+        out.push(this.toIssue(r));
+      }
+      return out;
+    });
+  }
+  async findBySha256(ownerId: string, sha256: string, excludeId: string) {
+    return (await this.db.document.findMany({ where: { ownerId, sha256, id: { not: excludeId }, deletedAt: null }, take: 20 })).map(toDoc);
+  }
   async listIssues(documentId: string) {
     return (await this.db.validationIssue.findMany({ where: { documentId }, orderBy: { createdAt: 'asc' } })).map((r) => this.toIssue(r));
   }
@@ -275,21 +288,21 @@ class PgDocuments implements DocumentRepository {
   async findDuplicateCandidates(q: Parameters<DocumentRepository['findDuplicateCandidates']>[0]) {
     if (!q.invoiceNumberKey) return [];
     const rows = await this.db.extractedResult.findMany({
-      where: { isCurrent: true, documentId: { not: q.documentId }, invoiceNumberKey: q.invoiceNumberKey, ...(q.supplierKey && { supplierKey: q.supplierKey }), document: { deletedAt: null } },
+      where: { isCurrent: true, documentId: { not: q.documentId }, invoiceNumberKey: q.invoiceNumberKey, ...(q.supplierKey && { supplierKey: q.supplierKey }), document: { deletedAt: null, ownerId: q.ownerId } },
       include: { document: true }, take: 50,
     });
     return rows.map((r) => ({ document: toDoc(r.document), result: toResult(r) }));
   }
 
-  private toHits(rows: { id: string; document_id: string; page: number | null; sheet: string | null; range: string | null; snippet: string; score: number; total: bigint }[], page: PageQuery): Page<SearchHit> {
+  private toHits(rows: { id: string; document_id: string; page: number | null; sheet: string | null; range: string | null; snippet: string; content: string; score: number; total: bigint }[], page: PageQuery): Page<SearchHit> {
     return {
-      items: rows.map((r) => ({ documentId: r.document_id, chunkId: r.id, score: Number(r.score), snippet: r.snippet, page: r.page, sheet: r.sheet, range: r.range })),
+      items: rows.map((r) => ({ documentId: r.document_id, chunkId: r.id, score: Number(r.score), snippet: r.snippet, content: r.content, page: r.page, sheet: r.sheet, range: r.range })),
       total: rows[0] ? Number(rows[0].total) : 0, page: page.page, pageSize: page.pageSize,
     };
   }
   async searchKeyword(q: string, f: DocumentFilters, page: PageQuery) {
     const rows = await this.db.$queryRaw<Parameters<PgDocuments['toHits']>[0]>`
-      SELECT c.id, c.document_id, c.page, c.sheet, c.range,
+      SELECT c.id, c.document_id, c.page, c.sheet, c.range, c.content,
              ts_headline('simple', c.content, tq.q, 'MaxFragments=1,MinWords=8,MaxWords=30') AS snippet,
              ts_rank(c.tsv, tq.q)::float8 AS score, count(*) OVER() AS total
       FROM text_chunks c JOIN documents d ON d.id = c.document_id,
@@ -301,7 +314,7 @@ class PgDocuments implements DocumentRepository {
   async searchSemantic(vector: number[], f: DocumentFilters, page: PageQuery) {
     const v = vec(vector);
     const rows = await this.db.$queryRaw<Parameters<PgDocuments['toHits']>[0]>`
-      SELECT c.id, c.document_id, c.page, c.sheet, c.range, left(c.content, 240) AS snippet,
+      SELECT c.id, c.document_id, c.page, c.sheet, c.range, c.content, left(c.content, 240) AS snippet,
              (1 - (c.embedding <=> ${v}::vector))::float8 AS score, count(*) OVER() AS total
       FROM text_chunks c JOIN documents d ON d.id = c.document_id
       WHERE c.embedding IS NOT NULL AND (1 - (c.embedding <=> ${v}::vector)) > 0.05 AND ${filterSql(f)}

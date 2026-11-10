@@ -197,6 +197,14 @@ class MemoryDocuments implements DocumentRepository {
     created.forEach((i) => this.issues.set(i.id, i));
     return created;
   }
+  async appendIssues(documentId: string, issues: Parameters<DocumentRepository['appendIssues']>[1]) {
+    const created = issues.map((i): IssueRecord => ({ ...i, id: randomUUID(), documentId, resolution: 'open', createdAt: new Date() }));
+    created.forEach((i) => this.issues.set(i.id, i));
+    return created;
+  }
+  async findBySha256(ownerId: string, sha256: string, excludeId: string) {
+    return [...this.docs.values()].filter((d) => d.ownerId === ownerId && d.sha256 === sha256 && d.id !== excludeId).map((d) => ({ ...d }));
+  }
   async listIssues(documentId: string) { return [...this.issues.values()].filter((i) => i.documentId === documentId); }
   async resolveIssue(id: string, resolution: 'resolved' | 'waived') { const i = this.issues.get(id); if (i) i.resolution = resolution; }
 
@@ -211,6 +219,7 @@ class MemoryDocuments implements DocumentRepository {
     const out: { document: DocumentRecord; result: ResultRecord }[] = [];
     for (const r of this.results.values()) {
       if (!r.isCurrent || r.documentId === q.documentId) continue;
+      if (this.docs.get(r.documentId)?.ownerId !== q.ownerId) continue;
       if (normalizeKey(r.current.invoiceNumber) !== q.invoiceNumberKey) continue;
       if (q.supplierKey && normalizeKey(r.current.supplierName) !== q.supplierKey) continue;
       const document = this.docs.get(r.documentId);
@@ -223,7 +232,7 @@ class MemoryDocuments implements DocumentRepository {
     return new Set([...this.docs.values()].filter((d) => this.matches(d, f)).map((d) => d.id));
   }
   private hit(c: ChunkRecord, score: number, snippet: string): SearchHit {
-    return { documentId: c.documentId, chunkId: c.id, score, snippet, page: c.page, sheet: c.sheet, range: c.range };
+    return { documentId: c.documentId, chunkId: c.id, score, snippet, content: c.content, page: c.page, sheet: c.sheet, range: c.range };
   }
   async searchKeyword(q: string, f: DocumentFilters, page: PageQuery) {
     const terms = tokenize(q);

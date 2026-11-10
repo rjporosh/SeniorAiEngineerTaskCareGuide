@@ -227,6 +227,14 @@ class MongoDocuments implements DocumentRepository {
     if (rows.length > 0) await this.m.Issue.insertMany(rows);
     return outAll<IssueRecord>(rows);
   }
+  async appendIssues(documentId: string, issues: Parameters<DocumentRepository['appendIssues']>[1]) {
+    const rows = issues.map((i) => ({ _id: randomUUID(), documentId, ...i, resolution: 'open', createdAt: new Date() }));
+    if (rows.length > 0) await this.m.Issue.insertMany(rows);
+    return outAll<IssueRecord>(rows);
+  }
+  async findBySha256(ownerId: string, sha256: string, excludeId: string) {
+    return outAll<DocumentRecord>(await this.m.Doc.find({ ownerId, sha256, _id: { $ne: excludeId }, deletedAt: null }).limit(20).lean<Row[]>());
+  }
   async listIssues(documentId: string) { return outAll<IssueRecord>(await this.m.Issue.find({ documentId }).sort({ createdAt: 1 }).lean<Row[]>()); }
   async resolveIssue(id: string, resolution: 'resolved' | 'waived') { await this.m.Issue.updateOne({ _id: id }, { $set: { resolution } }); }
 
@@ -241,7 +249,7 @@ class MongoDocuments implements DocumentRepository {
   async findDuplicateCandidates(q: Parameters<DocumentRepository['findDuplicateCandidates']>[0]) {
     if (!q.invoiceNumberKey) return [];
     const rows = await this.m.Result.find({ isCurrent: true, documentId: { $ne: q.documentId }, invoiceNumberKey: q.invoiceNumberKey, ...(q.supplierKey && { supplierKey: q.supplierKey }) }).limit(50).lean<Row[]>();
-    const docs = await this.m.Doc.find({ _id: { $in: rows.map((r) => r['documentId'] as string) }, deletedAt: null }).lean<Row[]>();
+    const docs = await this.m.Doc.find({ _id: { $in: rows.map((r) => r['documentId'] as string) }, deletedAt: null, ownerId: q.ownerId }).lean<Row[]>();
     const byId = new Map(docs.map((d) => [d._id, out<DocumentRecord>(d)!]));
     return rows.flatMap((r) => {
       const document = byId.get(r['documentId'] as string);
@@ -259,7 +267,7 @@ class MongoDocuments implements DocumentRepository {
     return {
       total, page: page.page, pageSize: page.pageSize,
       items: rows.map((r) => ({
-        documentId: r['documentId'] as string, chunkId: r._id, score: Number(r['score'] ?? 0), snippet: String(r['content']).slice(0, 240),
+        documentId: r['documentId'] as string, chunkId: r._id, score: Number(r['score'] ?? 0), snippet: String(r['content']).slice(0, 240), content: String(r['content']),
         page: (r['page'] as number | null) ?? null, sheet: (r['sheet'] as string | null) ?? null, range: (r['range'] as string | null) ?? null,
       })),
     };

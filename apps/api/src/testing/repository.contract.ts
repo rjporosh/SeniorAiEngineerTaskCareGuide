@@ -103,6 +103,16 @@ export function runRepositoryContract(name: string, create: () => Promise<Reposi
       expect((await repos.documents.listIssues(d.id))[0]?.resolution).toBe('waived');
     });
 
+    it('appends issues without touching existing ones and finds exact file duplicates by hash', async () => {
+      const sha = `sha-${Math.random()}`;
+      const a = await newDoc({ sha256: sha }); const b = await newDoc({ sha256: sha });
+      await repos.documents.replaceIssues(a.id, [{ code: 'A', severity: 'info', message: 'm', fields: [], details: {} }]);
+      await repos.documents.appendIssues(a.id, [{ code: 'B', severity: 'warning', message: 'm', fields: [], details: {} }]);
+      expect((await repos.documents.listIssues(a.id)).map((i) => i.code).sort()).toEqual(['A', 'B']);
+      expect((await repos.documents.findBySha256(ownerId, sha, a.id)).map((d) => d.id)).toEqual([b.id]);
+      expect(await repos.documents.findBySha256('00000000-0000-4000-8000-000000000000', sha, a.id)).toEqual([]);
+    });
+
     it('finds duplicate candidates by normalised supplier and invoice number', async () => {
       const mk = async (inv: string) => {
         const d = await newDoc();
@@ -112,9 +122,11 @@ export function runRepositoryContract(name: string, create: () => Promise<Reposi
       };
       const tag = Math.random().toString(36).slice(2, 8).toUpperCase();
       const a = await mk(`IN-${tag}/1`); const b = await mk(`in ${tag} 1`);
-      const found = await repos.documents.findDuplicateCandidates({ documentId: b.id, supplierKey: 'dupsupplierco', invoiceNumberKey: `in${tag.toLowerCase()}1` });
+      const found = await repos.documents.findDuplicateCandidates({ documentId: b.id, ownerId, supplierKey: 'dupsupplierco', invoiceNumberKey: `in${tag.toLowerCase()}1` });
       expect(found.map((f) => f.document.id)).toContain(a.id);
       expect(found.map((f) => f.document.id)).not.toContain(b.id);
+      const stranger = await repos.users.create({ email: `s${Math.random().toString(36).slice(2)}@x.io`, passwordHash: 'h', role: 'uploader' });
+      expect(await repos.documents.findDuplicateCandidates({ documentId: b.id, ownerId: stranger.id, supplierKey: 'dupsupplierco', invoiceNumberKey: `in${tag.toLowerCase()}1` })).toEqual([]);
     });
 
     it('keyword and semantic search return evidence coordinates and honour owner filters', async () => {

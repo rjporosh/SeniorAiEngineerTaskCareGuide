@@ -41,10 +41,10 @@ export interface SaveResultInput {
   documentId: string; attemptId: string; data: InvoiceData; extractor: ExtractorInfo;
 }
 export interface DuplicateQuery {
-  documentId: string; supplierKey: string | null; invoiceNumberKey: string | null;
+  documentId: string; ownerId: string; supplierKey: string | null; invoiceNumberKey: string | null;
 }
 export interface SearchHit {
-  documentId: string; chunkId: string; score: number; snippet: string;
+  documentId: string; chunkId: string; score: number; snippet: string; content: string;
   page: number | null; sheet: string | null; range: string | null;
 }
 export interface SearchFilters extends DocumentFilters {}
@@ -103,12 +103,15 @@ export interface DocumentRepository {
   listCorrections(documentId: string): Promise<CorrectionRecord[]>;
 
   replaceIssues(documentId: string, issues: NewIssue[]): Promise<IssueRecord[]>;
+  appendIssues(documentId: string, issues: NewIssue[]): Promise<IssueRecord[]>;
   listIssues(documentId: string): Promise<IssueRecord[]>;
   resolveIssue(issueId: string, resolution: 'resolved' | 'waived'): Promise<void>;
 
   replaceChunks(documentId: string, chunks: NewChunk[]): Promise<void>;
   countChunks(documentId: string): Promise<number>;
 
+  /** Documents of the same owner with identical file content (exact byte duplicates). */
+  findBySha256(ownerId: string, sha256: string, excludeId: string): Promise<DocumentRecord[]>;
   findDuplicateCandidates(q: DuplicateQuery): Promise<{ document: DocumentRecord; result: ResultRecord }[]>;
   searchKeyword(q: string, filters: SearchFilters, page: PageQuery): Promise<Page<SearchHit>>;
   /** Throws NotSupportedError when `capabilities.semanticSearch` is false. */

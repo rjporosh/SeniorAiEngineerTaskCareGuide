@@ -13,6 +13,8 @@ import { ConfigModule } from './config.module.js';
 import { DocumentsModule } from './documents/documents.module.js';
 import { HealthController } from './health/health.controller.js';
 import { HEALTH_PROBES } from './health/health.tokens.js';
+import { DOCUMENT_PROCESSOR, ProcessingModule, processorHealthProbe } from './processing/processing.module.js';
+import type { DocumentProcessorPort } from './processing/processor.client.js';
 import { PersistenceModule, REPOSITORIES, databaseHealthProbe } from './persistence.module.js';
 import { QUEUE, QueueModule, queueHealthProbe } from './queue.module.js';
 import { STORAGE, StorageModule, storageHealthProbe } from './storage.module.js';
@@ -21,14 +23,14 @@ const RATE_LIMIT = Number(process.env['RATE_LIMIT_PER_MINUTE'] ?? 120);
 
 @Module({
   imports: [
-    ConfigModule, PersistenceModule, QueueModule, StorageModule, AuthModule, DocumentsModule,
+    ConfigModule, PersistenceModule, QueueModule, StorageModule, ProcessingModule, AuthModule, DocumentsModule,
     ThrottlerModule.forRoot([{ name: 'default', ttl: 60_000, limit: RATE_LIMIT }]),
   ],
   controllers: [HealthController],
   providers: [
     {
-      provide: HEALTH_PROBES, inject: [REPOSITORIES, QUEUE, STORAGE],
-      useFactory: (r: Repositories, q: QueuePort, s: ObjectStoragePort) => [databaseHealthProbe(r), queueHealthProbe(q), storageHealthProbe(s)],
+      provide: HEALTH_PROBES, inject: [REPOSITORIES, QUEUE, STORAGE, DOCUMENT_PROCESSOR],
+      useFactory: (r: Repositories, q: QueuePort, s: ObjectStoragePort, p: DocumentProcessorPort) => [databaseHealthProbe(r), queueHealthProbe(q), storageHealthProbe(s), processorHealthProbe(p)],
     },
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_GUARD, useClass: AuthGuard },
