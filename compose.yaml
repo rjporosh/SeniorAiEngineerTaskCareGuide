@@ -2,7 +2,7 @@ name: docint
 services:
   api:
     build: { context: ., dockerfile: apps/api/Dockerfile }
-    env_file: .env
+    env_file: ${ENV_FILE:-.env}
     ports: ["${API_PUBLIC_PORT:-4000}:3001"]
     networks: [internal]
     restart: unless-stopped
@@ -30,7 +30,7 @@ services:
   # Internal-only document processing (PDF text, OCR, spreadsheets). Never published to the host.
   processor:
     build: { context: services/document-processor, target: runtime }
-    env_file: .env
+    env_file: ${ENV_FILE:-.env}
     networks: [internal]
     restart: unless-stopped
     mem_limit: 3g
@@ -44,7 +44,7 @@ services:
   migrate:
     build: { context: ., dockerfile: apps/api/Dockerfile }
     command: ["node", "migrate.mjs"]
-    env_file: .env
+    env_file: ${ENV_FILE:-.env}
     networks: [internal]
     restart: "no"
     depends_on:
