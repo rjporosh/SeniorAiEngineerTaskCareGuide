@@ -9,3 +9,14 @@ export const IconFiles = make(<><path d="M7 3h7l4 4v13a1 1 0 0 1-1 1H7a1 1 0 0 1
 export const IconSearch = make(<><circle cx="11" cy="11" r="6" /><path d="M20 20l-4.2-4.2" /></>);
 export const IconMoon = make(<path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z" />);
 export const IconOut = make(<><path d="M9 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h4" /><path d="M16 8l4 4-4 4M20 12H9" /></>);
+
+/** Scanner-bracket mark with a marigold read-line: the product in one glyph. */
+export function BrandMark({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 40 40" fill="none" aria-hidden="true">
+      <rect width="40" height="40" rx="11" fill="#0b7a75" />
+      <path d="M11 17v-4a2 2 0 0 1 2-2h4M29 17v-4a2 2 0 0 0-2-2h-4M11 23v4a2 2 0 0 0 2 2h4M29 23v4a2 2 0 0 1-2 2h-4" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" />
+      <path d="M13 20h14" stroke="#ffb020" strokeWidth="2.8" strokeLinecap="round" />
+    </svg>
+  );
+}

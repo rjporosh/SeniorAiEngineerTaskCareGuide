@@ -4,7 +4,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState, type ReactNode } from 'react';
 import { api } from '@/lib/api-client';
 import type { Me } from '@/lib/types';
-import { IconDesk, IconFiles, IconMoon, IconOut, IconSearch, IconUpload } from './icons';
+import { BrandMark, IconDesk, IconFiles, IconMoon, IconOut, IconSearch, IconUpload } from './icons';
 import { ToastProvider } from './toast';
 
 const NAV = [
@@ -36,7 +36,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <a className="skip" href="#content">Skip to content</a>
       <div className="shell">
         <nav className="rail" aria-label="Main">
-          <div className="brand" aria-hidden="true">Doc<br />Intel</div>
+          <div className="brand" aria-hidden="true"><BrandMark className="brand-mark" />DocIntel</div>
           {NAV.map(({ href, label, Icon }) => (
             <Link key={href} href={href} aria-current={href === '/' ? (path === '/' ? 'page' : undefined) : path.startsWith(href) ? 'page' : undefined}><Icon />{label}</Link>
           ))}
