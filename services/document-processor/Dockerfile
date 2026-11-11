@@ -4,7 +4,7 @@ FROM python:3.13-slim AS base
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1 OMP_THREAD_LIMIT=1
 RUN apt-get update \
  && apt-get upgrade -y \
- && apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-eng fonts-dejavu-core curl \
+ && apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-eng tesseract-ocr-ben fonts-dejavu-core curl \
  && rm -rf /var/lib/apt/lists/*
 WORKDIR /srv
 # requirements.txt lists direct dependencies; requirements.lock pins the complete resolved set (reproducible, auditable).
@@ -12,6 +12,8 @@ COPY requirements.txt requirements.lock ./
 RUN pip install --no-deps -r requirements.lock
 
 FROM base AS test
+# Bengali glyphs for the synthetic Bengali OCR fixtures (test image only).
+RUN apt-get update && apt-get install -y --no-install-recommends fonts-noto-core libfribidi0 && rm -rf /var/lib/apt/lists/*
 COPY requirements-dev.txt .
 RUN pip install -r requirements-dev.txt
 COPY app app

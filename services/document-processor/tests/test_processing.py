@@ -77,6 +77,28 @@ def test_images_are_ocrd(tmp_path, post, make, kind):
     assert "inv-2026-0042" in all_text(body)
 
 
+def test_bengali_image_is_ocrd_with_bengali_and_latin_text(tmp_path, post):
+    body = post(fx.bengali_png(tmp_path / "bn.png")).json()
+    text = all_text(body)
+    assert "চালান" in text and "মোট" in text, text
+    assert "inv-501" in text and "৫০১" in text, text  # English stays accurate alongside the Bengali model
+    assert "১২০০" in text, text
+
+
+def test_readiness_reports_installed_ocr_languages(client):
+    body = client.get("/health/ready").json()
+    assert body["status"] == "ok"
+    lang = next(c for c in body["checks"] if c["name"] == "ocr-languages")
+    assert lang["missing"] == [] and "ben" in lang["languages"]
+
+
+def test_readiness_degrades_when_a_configured_language_is_not_installed(client, settings, monkeypatch):
+    monkeypatch.setattr(settings, "ocr_languages", "eng+xxx")
+    r = client.get("/health/ready")
+    assert r.status_code == 503
+    assert next(c for c in r.json()["checks"] if c["name"] == "ocr-languages")["missing"] == ["xxx"]
+
+
 def test_skewed_image_is_deskewed_before_ocr(tmp_path, post):
     body = post(fx.png(tmp_path / "r.png", rotate=3.0)).json()
     assert "1100.00" in all_text(body)

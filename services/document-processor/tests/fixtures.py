@@ -9,6 +9,15 @@ from openpyxl import Workbook
 from PIL import Image, ImageDraw, ImageFont
 
 FONT = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+BENGALI_FONT = "/usr/share/fonts/truetype/noto/NotoSansBengali-Regular.ttf"
+
+BENGALI_LINES = [
+    "Invoice No: INV-501",
+    "চালান নং: ৫০১",
+    "তারিখ: ১৫/০৩/২০২৬",
+    "গ্রাহক: করিম এন্টারপ্রাইজ",
+    "মোট: ৳ ১২০০",
+]
 
 INVOICE_LINES = [
     "ACME SUPPLIES LTD",
@@ -143,4 +152,18 @@ def zip_bomb_xlsx(path: Path) -> Path:
         z.writestr("[Content_Types].xml", "<Types/>")
         z.writestr("xl/workbook.xml", "<workbook/>")
         z.writestr("xl/bomb.xml", b"0" * (300 * 1024 * 1024))
+    return path
+
+
+def bengali_png(path: Path, lines: list[str] = BENGALI_LINES) -> Path:
+    """Bengali needs complex-script shaping (libraqm) and a Bengali font; Latin-only lines use DejaVu (Noto Bengali has no Latin glyphs)."""
+    img = Image.new("RGB", (1400, 800), "white")
+    d = ImageDraw.Draw(img)
+    bengali = ImageFont.truetype(BENGALI_FONT, 56, layout_engine=ImageFont.Layout.RAQM)
+    latin = ImageFont.truetype(FONT, 52)
+    y = 50
+    for line in lines:
+        d.text((60, y), line, fill="black", font=bengali if any("\u0980" <= ch <= "\u09ff" for ch in line) else latin)
+        y += 110
+    img.save(path)
     return path

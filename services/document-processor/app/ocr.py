@@ -27,6 +27,15 @@ def tesseract_available() -> bool:
         return False
 
 
+def missing_languages(settings: Settings) -> list[str]:
+    """Configured OCR languages whose traineddata is not installed (empty when all are available)."""
+    try:
+        installed = set(pytesseract.get_languages(config=""))
+    except Exception:  # noqa: BLE001 - treated as "tesseract not ready" by the caller
+        return settings.ocr_languages.split("+")
+    return [lang for lang in settings.ocr_languages.split("+") if lang not in installed]
+
+
 def preprocess(img: Image.Image) -> np.ndarray:
     """Grayscale -> upscale small scans -> local contrast (CLAHE) -> light denoise -> deskew."""
     gray = np.array(img.convert("L"))

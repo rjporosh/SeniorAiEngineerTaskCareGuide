@@ -21,7 +21,8 @@ class Settings(BaseSettings):
     max_zip_ratio: int = 200
     max_text_chars: int = 30_000_000
     processing_timeout_seconds: int = 900
-    ocr_languages: str = "eng"
+    # Tesseract language codes joined with "+"; every code must have its traineddata installed (see Dockerfile). eng+ben covers Bengali.
+    ocr_languages: str = "eng+ben"
     ocr_psm: int = 6
     ocr_dpi: int = 200
     ocr_max_dimension: int = 4200

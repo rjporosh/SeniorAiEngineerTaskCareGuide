@@ -15,7 +15,7 @@ from .config import Settings, get_settings
 from .errors import ProcessingError
 from .models import ErrorBody, ErrorResponse, ProcessResponse
 from .ocr import configure as configure_ocr
-from .ocr import tesseract_available
+from .ocr import missing_languages, tesseract_available
 from .pipeline import process_file
 
 log = logging.getLogger("processor")
@@ -61,9 +61,15 @@ def live() -> dict[str, str]:
 
 
 @app.get("/health/ready")
-def ready() -> JSONResponse:
-    ok = tesseract_available()
-    return JSONResponse(status_code=200 if ok else 503, content={"status": "ok" if ok else "degraded", "checks": [{"name": "tesseract", "status": "up" if ok else "down"}]})
+def ready(settings: Settings = Depends(get_settings)) -> JSONResponse:
+    engine = tesseract_available()
+    missing = missing_languages(settings) if engine else []
+    ok = engine and not missing
+    checks = [
+        {"name": "tesseract", "status": "up" if engine else "down"},
+        {"name": "ocr-languages", "status": "up" if not missing else "down", "languages": settings.ocr_languages, "missing": missing},
+    ]
+    return JSONResponse(status_code=200 if ok else 503, content={"status": "ok" if ok else "degraded", "checks": checks})
 
 
 async def _spool(request: Request, limit_bytes: int) -> Path:
