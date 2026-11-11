@@ -4,7 +4,7 @@ import type { AppConfig } from '../config/env.schema.js';
 import type { Repositories } from '../application/ports.js';
 import type { QueuePort } from '../application/queue.js';
 import type { ObjectStoragePort } from '../application/storage.js';
-import { RulesInvoiceExtractor } from '../extraction/rules-extractor.js';
+import { createExtractor } from '../extraction/extractor.factory.js';
 import type { InvoiceExtractorPort } from '../extraction/types.js';
 import type { HealthProbe } from '../health/health.tokens.js';
 import { REPOSITORIES } from '../persistence.module.js';
@@ -28,7 +28,7 @@ export const DOCUMENT_VALIDATOR = Symbol('DOCUMENT_VALIDATOR');
       provide: DOCUMENT_PROCESSOR, inject: [APP_CONFIG],
       useFactory: (c: AppConfig): DocumentProcessorPort => new HttpDocumentProcessor(c.PROCESSOR_BASE_URL, c.PROCESSOR_SERVICE_TOKEN, (c.PROCESSING_TIMEOUT_SECONDS + 30) * 1000),
     },
-    { provide: INVOICE_EXTRACTOR, useFactory: (): InvoiceExtractorPort => new RulesInvoiceExtractor() },
+    { provide: INVOICE_EXTRACTOR, inject: [APP_CONFIG], useFactory: (c: AppConfig): InvoiceExtractorPort => createExtractor(c) },
     { provide: DOCUMENT_VALIDATOR, inject: [REPOSITORIES], useFactory: (r: Repositories) => new DocumentValidator(r) },
     {
       provide: PROCESSING_SERVICE, inject: [REPOSITORIES, STORAGE, DOCUMENT_PROCESSOR, INVOICE_EXTRACTOR, DOCUMENT_VALIDATOR, OBS_METRICS],

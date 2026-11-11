@@ -4,6 +4,8 @@ services:
     build: { context: ., dockerfile: apps/api/Dockerfile }
     env_file: ${ENV_FILE:-.env}
     ports: ["${API_PUBLIC_PORT:-4000}:3001"]
+    # Lets the API reach an Ollama running on the Docker host (EXTRACTOR_PROVIDER=ollama) on Linux as well as Docker Desktop.
+    extra_hosts: ["host.docker.internal:host-gateway"]
     networks: [internal]
     restart: unless-stopped
     depends_on:

@@ -64,6 +64,7 @@ export function validateInvoice(data: InvoiceData, ctx: ValidationContext = {}):
   for (const n of notes) {
     if (n.code === 'DATE_AMBIGUOUS') out.push(issue(ISSUE.DATE_AMBIGUOUS, 'warning', `The date "${n.raw}" can be read as day/month or month/day. Confirm the correct date.`, ['invoiceDate'], { raw: n.raw }));
     if (n.code === 'DATE_UNPARSEABLE') out.push(issue(ISSUE.INVALID_DATE, 'error', `The date "${n.raw}" is not a valid calendar date.`, ['invoiceDate'], { raw: n.raw }));
+    if (n.code === 'LOW_CONFIDENCE') out.push(issue(ISSUE.LOW_CONFIDENCE_FIELD, 'warning', `Two extraction methods read "${n.field ?? 'a field'}" differently. Please verify it against the source.`, n.field ? [n.field] : [], n.detail ?? {}));
     if (n.code === 'AMOUNT_UNPARSEABLE') out.push(issue(ISSUE.INVALID_AMOUNT, 'error', `The amount "${n.raw}" could not be read.`, n.field ? [n.field] : [], { raw: n.raw }));
   }
   if (data.invoiceDate) {

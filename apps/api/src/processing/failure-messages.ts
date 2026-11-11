@@ -20,6 +20,7 @@ const MESSAGES: Record<string, string> = {
   OCR_FAILED: 'Text recognition failed on a page.',
   PROCESSOR_UNAVAILABLE: 'The document processor was unavailable. The document can be reprocessed.',
   PROCESSOR_TIMEOUT: 'The document processor timed out. The document can be reprocessed.',
+  EXTRACTOR_UNAVAILABLE: 'The language model was unavailable. The document can be reprocessed.',
   BUSY: 'The processor was busy. The document can be reprocessed.',
 };
 export const failureMessage = (code: string): string => MESSAGES[code] ?? 'Processing failed. The document can be reprocessed.';

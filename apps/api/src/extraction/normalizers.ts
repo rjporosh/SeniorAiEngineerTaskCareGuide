@@ -7,6 +7,11 @@ export const ISO_CURRENCIES = new Set([
 ]);
 const SYMBOLS: Record<string, string> = { '€': 'EUR', '£': 'GBP', '৳': 'BDT', '₹': 'INR', '₩': 'KRW', '₫': 'VND', '₪': 'ILS', '฿': 'THB', '₺': 'TRY', '₽': 'RUB', '₴': 'UAH' };
 
+/** Bengali (০-৯) and Arabic-Indic digits to ASCII, so amounts and dates printed in Bengali parse like any other. */
+export function toAsciiDigits(text: string): string {
+  return text.replace(/[\u09E6-\u09EF]/g, (d) => String(d.charCodeAt(0) - 0x09e6)).replace(/[\u0660-\u0669]/g, (d) => String(d.charCodeAt(0) - 0x0660));
+}
+
 /** ISO 4217 code from an explicit code or an unambiguous symbol. "$" and "¥" are ambiguous and yield null. */
 export function detectCurrency(text: string): string | null {
   for (const m of text.toUpperCase().matchAll(/\b[A-Z]{3}\b/g)) if (ISO_CURRENCIES.has(m[0])) return m[0];
@@ -19,7 +24,7 @@ export function detectCurrency(text: string): string | null {
  * Handles 1,234.56 / 1.234,56 / 1 234,56 / (12.00) / -12.00 / currency symbols. Returns null when unsure.
  */
 export function parseAmount(raw: string): string | null {
-  let s = raw.trim();
+  let s = toAsciiDigits(raw).trim();
   if (s === '') return null;
   const parenNeg = /^\(.*\)$/.test(s);
   s = s.replace(/^\(|\)$/g, '').replace(/\b[A-Za-z]{3}\b/g, (t) => (ISO_CURRENCIES.has(t.toUpperCase()) ? '' : t));
@@ -62,7 +67,7 @@ function valid(y: number, m: number, d: number): boolean {
 
 /** Normalises to YYYY-MM-DD only when the reading is unambiguous; numeric d/m vs m/d with both <= 12 is ambiguous. */
 export function parseDate(raw: string): DateParse {
-  const s = raw.trim().replace(/(\d)(st|nd|rd|th)\b/gi, '$1').replace(/,/g, ' ').replace(/\s+/g, ' ');
+  const s = toAsciiDigits(raw).trim().replace(/(\d)(st|nd|rd|th)\b/gi, '$1').replace(/,/g, ' ').replace(/\s+/g, ' ');
   let m = /^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/.exec(s);
   if (m) return valid(+m[1]!, +m[2]!, +m[3]!) ? { kind: 'iso', value: `${m[1]}-${pad(+m[2]!)}-${pad(+m[3]!)}` } : { kind: 'invalid', raw };
   m = /^(\d{1,2})[ -/.]([A-Za-z]{3,9})[ -/.](\d{4})$/.exec(s);

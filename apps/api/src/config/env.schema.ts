@@ -38,6 +38,18 @@ export const envSchema = z
     PROCESSOR_BASE_URL: z.string().default('http://processor:8000').transform((v) => (/^https?:\/\//.test(v) ? v : `http://${v}`).replace(/\/+$/, '')),
     PROCESSOR_SERVICE_TOKEN: z.string().min(16),
 
+    // --- Information extraction: rules (offline, deterministic) | ollama (local model) | openai (hosted or OpenAI-compatible) ---
+    EXTRACTOR_PROVIDER: z.enum(['rules', 'ollama', 'openai']).default('rules'),
+    LLM_TIMEOUT_SECONDS: z.coerce.number().int().min(5).max(900).default(240),
+    LLM_MAX_INPUT_CHARS: z.coerce.number().int().min(1000).max(200_000).default(16_000),
+    LLM_FALLBACK_TO_RULES: z.enum(['true', 'false']).default('true').transform((v) => v === 'true'),
+    OLLAMA_BASE_URL: z.url().default('http://host.docker.internal:11434').transform((v) => v.replace(/\/+$/, '')),
+    OLLAMA_MODEL: z.string().min(1).default('qwen2.5-coder:14b'),
+    OLLAMA_NUM_CTX: z.coerce.number().int().min(2048).max(131_072).default(8192),
+    OPENAI_API_KEY: z.string().min(8).optional(),
+    OPENAI_BASE_URL: z.url().default('https://api.openai.com/v1').transform((v) => v.replace(/\/+$/, '')),
+    OPENAI_MODEL: z.string().min(1).default('gpt-4o-mini'),
+
     METRICS_TOKEN: z.string().min(16).optional(),
     SEED_DEMO_EMAIL: z.email().optional(),
     SEED_DEMO_PASSWORD: z.string().min(12).optional(),
@@ -69,6 +81,7 @@ export const envSchema = z
     need(env.QUEUE_PROVIDER !== 'rabbitmq' || !!env.RABBITMQ_URL, 'RABBITMQ_URL', 'required when QUEUE_PROVIDER=rabbitmq');
     need(env.QUEUE_PROVIDER !== 'bullmq' || !!env.REDIS_URL, 'REDIS_URL', 'required when QUEUE_PROVIDER=bullmq');
     need(env.OBJECT_STORAGE_PROVIDER !== 'minio' || (!!env.S3_ENDPOINT && !!env.S3_ACCESS_KEY && !!env.S3_SECRET_KEY), 'S3_ENDPOINT', 'S3_ENDPOINT, S3_ACCESS_KEY and S3_SECRET_KEY required when OBJECT_STORAGE_PROVIDER=minio');
+    need(env.EXTRACTOR_PROVIDER !== 'openai' || !!env.OPENAI_API_KEY, 'OPENAI_API_KEY', 'required when EXTRACTOR_PROVIDER=openai');
     need(!(env.NODE_ENV === 'production' && env.DATABASE_PROVIDER === 'memory'), 'DATABASE_PROVIDER', 'memory provider is not allowed in production');
   });
 

@@ -4,7 +4,7 @@ import { PermanentJobError, type DeliveryContext, type QueueMessage } from '../a
 import type { ObjectStoragePort } from '../application/storage.js';
 import { hashEmbedding } from '../domain/embedding.js';
 import type { AttemptRecord, DocumentRecord, InvoiceData, NewIssue, ProcessingStatus } from '../domain/types.js';
-import type { InvoiceExtractorPort } from '../extraction/types.js';
+import { ExtractionUnavailableError, type InvoiceExtractorPort } from '../extraction/types.js';
 import { runWithContext } from '../common/request-context.js';
 import { chunkBlocks, summaryChunk } from './chunker.js';
 import { DocumentValidator } from './document-validator.js';
@@ -59,13 +59,13 @@ export class DocumentProcessingService {
     const processed = await this.processor.process(body, { requestId: correlationId });
 
     await this.stage(doc, attempt, 'structuring');
-    const { data, notes } = this.extractor.extract(processed);
+    const { data, notes, extractor } = await this.extractor.extract(processed);
 
     await this.stage(doc, attempt, 'validating_result');
     const { outcome, peers } = await this.validator.validate(doc, data, notes, processed.blocks);
     data.requiresManualReview = outcome.requiresManualReview;
 
-    const result = await this.repos.documents.saveResult({ documentId: doc.id, attemptId: attempt.id, data, extractor: this.extractor.info });
+    const result = await this.repos.documents.saveResult({ documentId: doc.id, attemptId: attempt.id, data, extractor: extractor ?? this.extractor.info });
     await this.repos.documents.replaceIssues(doc.id, outcome.issues);
     await this.indexChunks(doc.id, processed, data);
     await this.notifyPeers(doc.id, peers);
@@ -102,7 +102,7 @@ export class DocumentProcessingService {
   }
 
   private async fail(e: unknown, doc: DocumentRecord, attempt: AttemptRecord, ctx: DeliveryContext): Promise<void> {
-    const err = e instanceof ProcessorError ? e : null;
+    const err = e instanceof ProcessorError || e instanceof ExtractionUnavailableError ? e : null;
     const code = err?.code ?? 'INTERNAL_ERROR';
     const retryable = err ? err.retryable : true;
     this.log.warn(`document ${doc.id} attempt ${ctx.attempt}/${ctx.maxAttempts} failed: ${code}${e instanceof Error ? ` (${e.message})` : ''}`);
