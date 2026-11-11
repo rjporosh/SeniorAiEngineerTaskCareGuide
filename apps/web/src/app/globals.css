@@ -177,6 +177,8 @@ dialog::backdrop { background: rgba(4, 16, 26, 0.6); backdrop-filter: blur(3px);
 .dropzone::after { content: ''; position: absolute; left: 0; right: 0; top: -30%; height: 30%; background: linear-gradient(180deg, transparent, rgba(255, 176, 32, 0.28) 70%, rgba(255, 176, 32, 0.9)); border-bottom: 2px solid var(--beam); opacity: 0; pointer-events: none; }
 .dropzone[data-over='true'], .dropzone:hover { background: var(--peacock-bg); border-color: var(--peacock); border-style: solid; }
 .dropzone[data-over='true']::after { opacity: 1; animation: scan 1.6s ease-in-out infinite; }
+.drop-glyph { width: 56px; height: 56px; color: var(--peacock); }
+.dropzone[data-over='true'] .drop-glyph { transform: scale(1.12); transition: transform 0.2s; }
 @keyframes scan { from { top: -30%; } to { top: 100%; } }
 .queue { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
 .queue li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 14px; padding: 14px 0; border-bottom: 1px solid var(--rule); align-items: center; }

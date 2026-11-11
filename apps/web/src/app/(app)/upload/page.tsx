@@ -103,8 +103,12 @@ export default function UploadPage() {
           onClick={() => input.current?.click()} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.current?.click(); } }}
           onDragOver={(e) => { e.preventDefault(); setOver(true); }} onDragLeave={() => setOver(false)} onDrop={onDrop}
         >
+          <svg className="drop-glyph" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <path d="M12 24v-8a4 4 0 0 1 4-4h8M52 24v-8a4 4 0 0 0-4-4h-8M12 40v8a4 4 0 0 0 4 4h8M52 40v8a4 4 0 0 1-4 4h-8" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+            <path d="M18 32h28" stroke="#ffb020" strokeWidth="4.5" strokeLinecap="round" />
+          </svg>
           <strong>Drop files here or choose from your computer</strong>
-          <span className="muted">Scanned pages are read with text recognition. Spreadsheets keep sheet and cell references.</span>
+          <span className="muted">Scanned pages are read with text recognition in English and বাংলা. Spreadsheets keep sheet and cell references.</span>
           <input ref={input} type="file" multiple hidden aria-label="Choose files" accept=".pdf,.jpg,.jpeg,.png,.tif,.tiff,.xlsx,.xls,.csv" onChange={(e) => { if (e.target.files) add(e.target.files); e.target.value = ''; }} />
         </div>
       </section>
