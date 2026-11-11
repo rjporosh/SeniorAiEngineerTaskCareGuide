@@ -4,6 +4,7 @@
  *
  *   node scripts/evaluate.mjs                 # full labelled dataset, writes docs/evaluation-report.md
  *   node scripts/evaluate.mjs --extractor "ollama qwen2.5-coder:14b" --report docs/evaluation-report-llm.md   # label + output for a model-backed run
+ *   node scripts/evaluate.mjs --attach                # re-score documents already processed by an earlier (interrupted) run, no re-upload
  *   node scripts/evaluate.mjs --smoke         # 6 representative files, asserts only, writes nothing
  *   node scripts/evaluate.mjs --api http://localhost:4000/api/v1
  *
@@ -20,6 +21,7 @@ const args = process.argv.slice(2);
 const flag = (n) => args.includes(n);
 const opt = (n, d) => (args.includes(n) ? args[args.indexOf(n) + 1] : d);
 const smoke = flag('--smoke');
+const attach = flag('--attach');
 const API = opt('--api', 'http://localhost:4000/api/v1');
 const EXTRACTOR = opt('--extractor', 'rules');
 const REPORT = opt('--report', 'docs/evaluation-report.md');
@@ -59,20 +61,38 @@ const adminToken = login.body.data.accessToken;
 // Fresh, isolated uploader account per run: duplicate detection is owner-scoped, so earlier runs cannot pollute this one.
 const runId = `eval-${Date.now()}`;
 const evalEmail = `${runId}@example.com`; const evalPassword = `${runId}-Pw-${Math.random().toString(36).slice(2)}`;
-const created = await call('/auth/users', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: evalEmail, password: evalPassword, role: 'uploader' }) }, adminToken);
-if (created.status !== 201) { console.error('could not create the evaluation user', created.status); process.exit(2); }
-const evalLogin = await call('/auth/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: evalEmail, password: evalPassword }) });
-const token = evalLogin.body.data.accessToken;
+const signIn = async (e, p) => (await call('/auth/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: e, password: p }) })).body.data.accessToken;
+let token = adminToken;
+if (!attach) {
+  const created = await call('/auth/users', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: evalEmail, password: evalPassword, role: 'uploader' }) }, adminToken);
+  if (created.status !== 201) { console.error('could not create the evaluation user', created.status); process.exit(2); }
+  token = await signIn(evalEmail, evalPassword);
+}
+/** Access tokens are short-lived (15 min) and a full model-backed run takes longer: sign in again on 401. */
+const api = async (path, init = {}) => {
+  let r = await call(path, init, token);
+  if (r.status === 401) { token = attach ? await signIn(email, password) : await signIn(evalEmail, evalPassword); r = await call(path, init, token); }
+  return r;
+};
 
-// ---- upload in batches of 20 (the default per-request limit) ----
+// ---- upload in batches of 20 (the default per-request limit), or attach to documents from an earlier run ----
 const run = runId;
 const idByFile = new Map();
 const t0 = Date.now();
-for (let i = 0; i < docs.length; i += 20) {
+if (attach) {
+  for (let page = 1; page <= 20; page++) {
+    const r = await api(`/documents?pageSize=100&page=${page}&sortBy=createdAt&sortDir=desc`);
+    const items = r.body?.data?.items ?? [];
+    for (const it of items) if (!idByFile.has(it.filename) && docs.some((d) => d.file === it.filename)) idByFile.set(it.filename, it.id);
+    if (items.length < 100) break;
+  }
+  console.log(`attached to ${idByFile.size} existing documents`);
+}
+for (let i = 0; !attach && i < docs.length; i += 20) {
   const batch = docs.slice(i, i + 20);
   const form = new FormData();
   for (const d of batch) form.append('files', new Blob([readFileSync(join(root, 'fixtures/synthetic', d.file))]), d.file);
-  const r = await call('/documents', { method: 'POST', body: form, headers: { 'idempotency-key': `${run}-batch-${i}` } }, token);
+  const r = await api('/documents', { method: 'POST', body: form, headers: { 'idempotency-key': `${run}-batch-${i}` } });
   if (r.status !== 201) { console.error('upload failed', r.status, JSON.stringify(r.body?.errors ?? r.body)); process.exit(1); }
   for (const a of r.body.data.documents) idByFile.set(a.filename, a.id);
   for (const x of r.body.data.rejected) console.log(`rejected at upload: ${x.filename} (${x.code})`);
@@ -85,12 +105,13 @@ const deadline = Date.now() + TIMEOUT_MS;
 while (states.size < idByFile.size && Date.now() < deadline) {
   for (const [file, id] of idByFile) {
     if (states.has(file)) continue;
-    const d = await call(`/documents/${id}`, {}, token);
+    const d = await api(`/documents/${id}`);
     if (d.status === 200 && TERMINAL.has(d.body.data.processingStatus)) states.set(file, d.body.data);
   }
   if (states.size < idByFile.size) await new Promise((r) => setTimeout(r, 1000));
 }
-const wallMs = Date.now() - t0;
+const spans = [...states.values()].flatMap((d) => [Date.parse(d.createdAt)].concat(d.attempts.at(-1)?.finishedAt ? [Date.parse(d.attempts.at(-1).finishedAt)] : []));
+const wallMs = attach && spans.length ? Math.max(...spans) - Math.min(...spans) : Date.now() - t0;
 
 // ---- score ----
 const perField = Object.fromEntries(FIELDS.map((f) => [f, { tp: 0, fp: 0, fn: 0, labelled: 0 }]));
@@ -104,7 +125,7 @@ for (const d of docs) {
   if (d.kind === 'corrupt') { row.ok = st?.processingStatus === 'rejected'; rows.push(row); if (!row.ok) failures.push(`${d.file}: expected rejection, got ${row.status}`); continue; }
   if (!st || st.processingStatus !== 'completed') { failures.push(`${d.file}: ended as ${row.status}${st?.failure ? ` (${st.failure.code})` : ''}`); rows.push(row); continue; }
   completed++;
-  const res = (await call(`/documents/${st.id}/result`, {}, token)).body.data;
+  const res = (await api(`/documents/${st.id}/result`)).body.data;
   const got = res.result?.extraction ?? {};
   const att = st.attempts.at(-1);
   if (att?.finishedAt) { latencies.push(Date.parse(att.finishedAt) - Date.parse(att.startedAt)); e2e.push(Date.parse(att.finishedAt) - Date.parse(st.createdAt)); }

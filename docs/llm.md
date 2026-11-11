@@ -46,6 +46,16 @@ Tesseract reads `eng+ben` (`OCR_LANGUAGES`, readiness reports missing language d
 
 A 14B model on a laptop takes ~20–30 s per text-heavy PDF/image (the worker queue absorbs this; raise `LLM_TIMEOUT_SECONDS` and keep `QUEUE_CONCURRENCY` low for a single GPU). Real numbers for this repository: [evaluation-report-llm.md](evaluation-report-llm.md).
 
+## Measured comparison (synthetic set, 79 labelled documents)
+
+| | Rules | Ollama `qwen2.5-coder:14b` + rules cross-check |
+|---|---|---|
+| Strict accuracy (all 8 fields) | 75 / 79 (94.9%) | 74 / 79 (93.7%) |
+| Critical fields (number, total, currency) | 78 / 79 (98.7%) | 77 / 79 (97.5%) |
+| Throughput | 75.8 docs/min | 1.8 docs/min |
+
+Honest reading: on this dataset the model is **not** more accurate than the rules, which were developed against the same synthetic templates; it is ~40× slower. Its value is on layouts and languages the rules do not know (Bengali labels, free-form invoices), which this dataset does not cover. Differences seen: the model returned positive amounts for the credit note (rules: negative), and when OCR misread a letter (`Velta` for `Delta`) the model copied the OCR text, as designed. Full tables: [evaluation-report-llm.md](evaluation-report-llm.md). Before trusting the model on a new document family, measure it on a labelled sample of that family.
+
 ## Tests
 
 - Unit (mocked transport): `pnpm --filter @docint/api test` — grounding, hallucination rejection, injection, ambiguity, Bengali, fallback, schema violations, spreadsheet skip, client request shape, secrets not leaked.
