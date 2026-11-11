@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "build": "prisma generate && tsc -p tsconfig.build.json",
+    "build": "prisma generate && tsc -p tsconfig.build.json && node scripts/copy-assets.mjs",
     "typecheck": "prisma generate && tsc -p tsconfig.json --noEmit",
     "lint": "eslint src",
     "test": "vitest run",
@@ -55,6 +55,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@nestjs/testing": "12.4.2",
+    "@scalar/api-reference": "1.78.0",
     "@types/busboy": "^1.5.5",
     "@types/express": "^5.0.6",
     "@types/node": "^26.6.6",

@@ -10,6 +10,7 @@ allowBuilds:
   "@prisma/client": true
   msgpackr-extract: false
   protobufjs: false
+  vue-demi: false
 minimumReleaseAgeExclude:
   - mongoose@9.12.1
   - bullmq@6.7.3
@@ -23,3 +24,25 @@ minimumReleaseAgeExclude:
   - "@next/swc-win32-arm64-msvc@16.4.6"
   - "@next/swc-win32-x64-msvc@16.4.6"
   - next@16.4.6
+  - "@scalar/agent-chat@0.12.51"
+  - "@scalar/api-client@3.25.0"
+  - "@scalar/api-reference@1.78.0"
+  - "@scalar/asyncapi-to-markdown@0.2.7"
+  - "@scalar/asyncapi-upgrader@0.1.20"
+  - "@scalar/blocks@0.7.0"
+  - "@scalar/code-highlight@0.4.13"
+  - "@scalar/components@0.34.0"
+  - "@scalar/helpers@0.17.1"
+  - "@scalar/json-magic@0.19.0"
+  - "@scalar/localization@0.2.11"
+  - "@scalar/oas-utils@0.20.20"
+  - "@scalar/openapi-to-markdown@1.7.5"
+  - "@scalar/openapi-types@0.9.9"
+  - "@scalar/openapi-upgrader@0.4.8"
+  - "@scalar/schemas@0.17.0"
+  - "@scalar/sidebar@0.12.8"
+  - "@scalar/snippetz@0.10.16"
+  - "@scalar/types@0.28.0"
+  - "@scalar/use-codemirror@0.14.18"
+  - "@scalar/use-hooks@0.4.24"
+  - "@scalar/workspace-store@0.71.0"

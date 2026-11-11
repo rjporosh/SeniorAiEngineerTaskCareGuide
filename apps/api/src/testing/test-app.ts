@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { Test } from '@nestjs/testing';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from '../app.module.js';
-import { configureApp } from '../bootstrap.js';
+import { configureApp, setupDocs } from '../bootstrap.js';
 import { OUTBOX_RELAY, QUEUE } from '../queue.module.js';
 import { DOCUMENT_PROCESSOR } from '../processing/processing.module.js';
 import type { DocumentProcessorPort } from '../processing/processor.client.js';
@@ -54,7 +54,9 @@ export async function startTestApp(env: Record<string, string> = {}): Promise<Te
   const mod = await Test.createTestingModule({ imports: [AppModule] })
     .overrideProvider(QUEUE).useValue(queue).overrideProvider(DOCUMENT_PROCESSOR).useValue(processor).compile();
   const app = mod.createNestApplication<NestExpressApplication>({ logger: false });
-  configureApp(app, loadConfig());
+  const config = loadConfig();
+  configureApp(app, config);
+  setupDocs(app, config.API_DOCS_ENABLED);
   await app.listen(0, '127.0.0.1');
   const base = `http://127.0.0.1:${(app.getHttpServer().address() as { port: number }).port}/api/v1`;
   const login = async (email: string, password: string) => {

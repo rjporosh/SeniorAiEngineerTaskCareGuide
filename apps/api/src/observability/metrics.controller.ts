@@ -1,3 +1,4 @@
+import { Op, ApiTags } from '../common/openapi.js';
 import { timingSafeEqual } from 'node:crypto';
 import { Controller, Get, Headers, Inject, Res } from '@nestjs/common';
 import type { Response } from 'express';
@@ -8,11 +9,13 @@ import { notFound, unauthorized } from '../common/errors.js';
 import { AppMetrics } from './metrics.js';
 import { OBS_METRICS } from './observability.tokens.js';
 
+@ApiTags('Health')
 @Controller()
 export class MetricsController {
   constructor(@Inject(OBS_METRICS) private readonly metrics: AppMetrics, @Inject(APP_CONFIG) private readonly cfg: Pick<AppConfig, 'METRICS_TOKEN'>) {}
 
   /** Disabled unless METRICS_TOKEN is set; scrapers must send it as a bearer token. */
+  @Op('Prometheus metrics', { description: 'Text exposition format. Disabled unless `METRICS_TOKEN` is set; send it as a bearer token.', auth: false, errors: [401, 404] })
   @Public() @RawResponse() @Get('metrics')
   async scrape(@Headers('authorization') auth: string | undefined, @Res() res: Response): Promise<void> {
     const token = this.cfg.METRICS_TOKEN;
