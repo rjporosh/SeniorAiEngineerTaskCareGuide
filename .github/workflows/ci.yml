@@ -62,7 +62,9 @@ jobs:
 
   e2e:
     name: Docker stack, smoke, browser journeys, evaluation
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest moved to a release whose apt mirrors are unreachable from the runner, which broke
+    # `playwright install-deps`. Move back to ubuntu-latest once that image can install browser dependencies.
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
