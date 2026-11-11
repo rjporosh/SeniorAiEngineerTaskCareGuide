@@ -62,9 +62,7 @@ jobs:
 
   e2e:
     name: Docker stack, smoke, browser journeys, evaluation
-    # Pinned: ubuntu-latest moved to a release whose apt mirrors are unreachable from the runner, which broke
-    # `playwright install-deps`. Move back to ubuntu-latest once that image can install browser dependencies.
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
@@ -80,7 +78,10 @@ jobs:
       - run: docker compose up --build -d --wait
       - run: node scripts/evaluate.mjs --smoke
       - run: pnpm --filter @docint/e2e install:browsers
-      - run: pnpm --filter @docint/e2e exec playwright install-deps chromium
+      # GitHub runners already ship Chromium's system libraries. Installing extras needs the Ubuntu apt mirrors, which have
+      # been unreachable from the runners at times, so a failure here must not fail the job: if a library is genuinely
+      # missing, the browser tests below fail loudly.
+      - run: pnpm --filter @docint/e2e exec playwright install-deps chromium || echo "::warning::playwright install-deps skipped (apt mirrors unreachable)"
       - run: pnpm --filter @docint/e2e test
       - run: node scripts/evaluate.mjs
       - name: Upload evidence
