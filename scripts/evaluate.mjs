@@ -3,6 +3,7 @@
  * Reproducible evaluation against a running stack.
  *
  *   node scripts/evaluate.mjs                 # full labelled dataset, writes docs/evaluation-report.md
+ *   node scripts/evaluate.mjs --extractor "ollama qwen2.5-coder:14b" --report docs/evaluation-report-llm.md   # label + output for a model-backed run
  *   node scripts/evaluate.mjs --smoke         # 6 representative files, asserts only, writes nothing
  *   node scripts/evaluate.mjs --api http://localhost:4000/api/v1
  *
@@ -20,6 +21,8 @@ const flag = (n) => args.includes(n);
 const opt = (n, d) => (args.includes(n) ? args[args.indexOf(n) + 1] : d);
 const smoke = flag('--smoke');
 const API = opt('--api', 'http://localhost:4000/api/v1');
+const EXTRACTOR = opt('--extractor', 'rules');
+const REPORT = opt('--report', 'docs/evaluation-report.md');
 const TIMEOUT_MS = Number(opt('--timeout', 300_000));
 
 function env(name) {
@@ -157,8 +160,8 @@ const report = `# Evaluation Report
 | Host | ${platform()} ${release()}, ${cpus().length} logical CPUs (${cpus()[0]?.model.trim()}), ${(totalmem() / 2 ** 30).toFixed(0)} GiB RAM |
 | Docker | ${sh('docker', ['--version'])} |
 | Stack | PostgreSQL 18 + RabbitMQ 4 + MinIO, NestJS worker concurrency ${env('QUEUE_CONCURRENCY') ?? '2'}, processor concurrency 2 |
-| Extractor | \`rules\` v1.0.0 (deterministic; **no LLM was used**, so no model/provider/prompt version applies) |
-| OCR | ${sh('docker', ['compose', 'exec', '-T', 'processor', 'tesseract', '--version']).split('\n')[0]}, languages \`eng\`, \`--oem 1 --psm 6\`, 200 DPI render, CLAHE + deskew preprocessing |
+| Extractor | ${EXTRACTOR === 'rules' ? '`rules` v1.0.0 (deterministic; **no LLM was used**, so no model/provider/prompt version applies)' : `\`${EXTRACTOR}\` with the rules extractor as cross-check and fallback; temperature 0, schema-constrained JSON, prompt version \`invoice-extraction/2026-11-11.1\` (spreadsheets with a clean table are read by the rules)`} |
+| OCR | ${sh('docker', ['compose', 'exec', '-T', 'processor', 'tesseract', '--version']).split('\n')[0]}, languages \`${env('OCR_LANGUAGES') ?? 'eng+ben'}\`, \`--oem 1 --psm 6\`, 200 DPI render, CLAHE + deskew preprocessing |
 | Dataset | \`fixtures/synthetic\` seed ${dataset.seed}: ${docs.length} documents (${scored} scored extractions + ${docs.length - scored} corrupt-file rejection test) |
 | Time limit per run | ${TIMEOUT_MS / 1000}s |
 
@@ -206,10 +209,10 @@ ${rows.some((r) => r.wrong?.length) ? `### Per-document differences\n\n${rows.fi
 ## Limitations
 
 - Synthetic, template-based documents; real invoices vary far more. Treat figures as a regression baseline.
-- English labels only; the rule-based extractor does not understand other languages.
+- The rules extractor understands English labels only; Bengali documents need \`EXTRACTOR_PROVIDER=ollama|openai\` (OCR itself supports Bengali).
 - OCR is evaluated on clean rendered text (some blur/rotation), not on genuine camera scans.
 - Latency is for this machine under Docker; it is not a capacity claim. See \`docs/performance.md\` for load tests.
 `;
-writeFileSync(join(root, 'docs/evaluation-report.md'), report);
-writeFileSync(join(root, 'fixtures/synthetic/results.json'), JSON.stringify({ generatedAt: new Date().toISOString(), rows }, null, 2) + '\n');
-console.log(`wrote docs/evaluation-report.md (${basename(root)})`);
+writeFileSync(join(root, REPORT), report);
+writeFileSync(join(root, REPORT === 'docs/evaluation-report.md' ? 'fixtures/synthetic/results.json' : `fixtures/synthetic/results-${basename(REPORT, '.md').replace('evaluation-report-', '')}.json`), JSON.stringify({ generatedAt: new Date().toISOString(), rows }, null, 2) + '\n');
+console.log(`wrote ${REPORT} (${basename(root)})`);

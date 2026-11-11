@@ -9,8 +9,8 @@ Upload invoices as PDFs, scans, photos, spreadsheets or CSV files. The system re
 | Capability | How it works |
 |---|---|
 | Ingest | Multi-file upload; extension, MIME **and** file-signature checks; size/page/row/sheet/time limits; corrupt or hostile files are rejected without affecting the batch |
-| Read | Digital PDFs use embedded text; scanned/hybrid pages are OCR'd page by page (Tesseract); images are deskewed and contrast-enhanced; TIFF multi-frame; XLSX/XLS/CSV keep sheet and cell coordinates; formulas and macros are never executed |
-| Extract | Versioned invoice schema with field-level evidence and OCR confidence; unknown or ambiguous values stay `null` (never guessed) |
+| Read | Digital PDFs use embedded text; scanned/hybrid pages are OCR'd page by page (Tesseract, **English + Bengali**); images are deskewed and contrast-enhanced; TIFF multi-frame; XLSX/XLS/CSV keep sheet and cell coordinates; formulas and macros are never executed |
+| Extract | Switchable extractor: deterministic **rules**, a local **Ollama** model (`qwen2.5-coder:14b`) or **OpenAI**; versioned invoice schema with field-level evidence and confidence; every model value must be found in the document, unknown or ambiguous values stay `null` (never guessed) |
 | Validate | Required fields, decimal-safe subtotal + tax = total, line sums, credit notes, duplicates, PDF↔spreadsheet cross-checks; anything doubtful sets *needs review* |
 | Review | Edit values with optimistic concurrency, accept or resolve issues, reprocess without losing history |
 | Search | Keyword (PostgreSQL full-text / MongoDB text) and semantic (pgvector) search with filters and page/sheet/cell locations |
@@ -43,10 +43,46 @@ Open **http://localhost:4001** and sign in with `SEED_ADMIN_EMAIL` / `SEED_ADMIN
 | Service | Where | Notes |
 |---|---|---|
 | Web UI | http://localhost:4001 | `WEB_PUBLIC_PORT` |
-| API | http://localhost:4000/api/v1 | `API_PUBLIC_PORT`; OpenAPI at `/api/docs` when `API_DOCS_ENABLED=true` |
+| API | http://localhost:4000/api/v1 | `API_PUBLIC_PORT` |
+| API reference (Scalar) | http://localhost:4000/api/docs | titled OpenAPI reference; Swagger UI at `/api/swagger`, raw spec at `/api/docs/openapi.json` (`API_DOCS_ENABLED=true`) |
 | PostgreSQL, RabbitMQ, MinIO, processor | private network only | no host ports (see `compose.dev.yaml` for developer ports) |
 
 Optional: `docker compose --profile observability up -d` adds Jaeger (http://localhost:16686), Prometheus (:9090) and Grafana (http://localhost:3030).
+
+## AI extraction: Ollama or OpenAI (switch in `.env`)
+
+```env
+EXTRACTOR_PROVIDER=rules     # rules | ollama | openai
+# Local model (free, private): ollama pull qwen2.5-coder:14b
+OLLAMA_BASE_URL=http://host.docker.internal:11434
+OLLAMA_MODEL=qwen2.5-coder:14b
+# Hosted: set EXTRACTOR_PROVIDER=openai and OPENAI_API_KEY (OPENAI_BASE_URL also accepts any OpenAI-compatible server)
+OPENAI_MODEL=gpt-4o-mini
+```
+
+Apply with `docker compose up -d --force-recreate api`. The model only *proposes* values: each one must appear in the document text, amounts and dates pass the same deterministic normalisers as the rules, the rules run alongside as a cross-check (a disagreement raises a review warning), and the rules take over if the model is unreachable (`LLM_FALLBACK_TO_RULES`). Document text is passed as delimited untrusted data, so instructions hidden in an invoice cannot change the result. Model, version and prompt version are stored with every extraction. Details: [docs/llm.md](docs/llm.md).
+
+**Bengali:** OCR reads English and বাংলা together (`OCR_LANGUAGES=eng+ben`). Field extraction for Bengali documents uses the Ollama/OpenAI extractor (the rules know English labels only).
+
+## Run from published Docker images
+
+Every push to `main` that passes CI publishes multi-arch (amd64/arm64) images to GitHub Container Registry:
+
+| Image | Pull |
+|---|---|
+| Web UI (Next.js) | `docker pull ghcr.io/rjporosh/docint-web:latest` |
+| API (NestJS) | `docker pull ghcr.io/rjporosh/docint-api:latest` |
+| Document processor (OCR) | `docker pull ghcr.io/rjporosh/docint-processor:latest` |
+
+Package pages: [web](https://github.com/rjporosh/SeniorAiEngineerTaskCareGuide/pkgs/container/docint-web) · [api](https://github.com/rjporosh/SeniorAiEngineerTaskCareGuide/pkgs/container/docint-api) · [processor](https://github.com/rjporosh/SeniorAiEngineerTaskCareGuide/pkgs/container/docint-processor). The whole stack (web **and** api **and** processor plus PostgreSQL, RabbitMQ, MinIO) starts from them with no build:
+
+```bash
+cp .env.example .env            # replace every CHANGE_ME value
+docker compose -f compose.yaml -f compose.images.yaml pull
+docker compose -f compose.yaml -f compose.images.yaml up -d --wait
+```
+
+The **UI is at http://localhost:4001** (the web container; the API at :4000 has no UI). If the images are private after the first publish, set each package to *Public* once (GitHub → Packages → Package settings → Change visibility).
 
 ## Switching providers (no code changes)
 
@@ -89,7 +125,8 @@ See [docs/operations.md](docs/operations.md) for migrations, backups and trouble
 | [docs/operations.md](docs/operations.md) | Run, observe, migrate, back up, troubleshoot |
 | [docs/testing.md](docs/testing.md) | Test pyramid and exact commands |
 | [docs/performance.md](docs/performance.md) | Measured load/stress/OCR results |
-| [docs/evaluation-report.md](docs/evaluation-report.md) | Measured extraction accuracy (generated) |
+| [docs/evaluation-report.md](docs/evaluation-report.md) · [docs/evaluation-report-llm.md](docs/evaluation-report-llm.md) | Measured extraction accuracy, rules and Ollama (generated) |
+| [docs/llm.md](docs/llm.md) | Choosing and configuring the extraction model, safety design |
 | [docs/walkthrough.md](docs/walkthrough.md) | Demo script |
 | [docs/deployment.md](docs/deployment.md) | Free demo hosting (Render blueprint, Vercel, Northflank) and the demo account |
 | [docs/ai-assistance.md](docs/ai-assistance.md) | How AI assistance was used |
@@ -112,7 +149,8 @@ Official documentation: [NestJS](https://docs.nestjs.com) · [Next.js](https://n
 
 ## Known limitations
 
-- **Extraction is rule-based** (no LLM): it understands English labels and the layouts in the evaluation set. A model-backed extractor can be added behind `InvoiceExtractorPort`; none is enabled. See the evaluation report for measured accuracy and its caveats (synthetic data).
+- **The default extractor is rule-based** and understands English labels only; `EXTRACTOR_PROVIDER=ollama|openai` adds a model (see [docs/llm.md](docs/llm.md)). A local 14B model needs roughly 20–30 s per text-heavy document on a laptop, so it is slower than the rules. Measured accuracy of both is in the evaluation reports (synthetic data).
+- Bengali: OCR is verified on clean synthetic renders only; Bengali handwriting and noisy photos are untested. Mixed Latin/Bengali tokens inside one word can be misread.
 - OCR quality drops on blurred or rotated photos (see the evaluation report); low OCR confidence is surfaced as a review reason, not hidden.
 - Semantic search uses a deterministic hashing embedding (lexical similarity), not a language model.
 - Multi-invoice files: the first invoice is extracted and the file is flagged. Multi-row spreadsheets are searchable and cross-checked per row but produce no single invoice.

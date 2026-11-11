@@ -65,3 +65,26 @@ Create a project with: a PostgreSQL addon (pgvector enabled) and a Redis addon (
 | Processor | `PROCESSOR_SERVICE_TOKEN` | same token as the API |
 | Web | `API_INTERNAL_URL` | API address (bare `host:port` or full URL; `/api/v1` is added if missing) |
 | Web | `COOKIE_SECURE` | `true` over HTTPS |
+
+## Container images (GitHub Container Registry)
+
+`.github/workflows/publish.yml` builds `docint-web`, `docint-api` and `docint-processor` for `linux/amd64` and `linux/arm64` and pushes them to `ghcr.io/<owner>/` after CI succeeds on `main` (tags: `latest`, short SHA, and `vX.Y.Z` for version tags). It needs no secrets beyond the built-in `GITHUB_TOKEN`.
+
+| Image | Reference |
+|---|---|
+| Web UI | `ghcr.io/rjporosh/docint-web:latest` |
+| API | `ghcr.io/rjporosh/docint-api:latest` |
+| Processor | `ghcr.io/rjporosh/docint-processor:latest` |
+
+- First publish creates private packages: open each package on GitHub → *Package settings* → *Change visibility* → Public so anyone can `docker pull` them.
+- Run everything from the images: `docker compose -f compose.yaml -f compose.images.yaml up -d --wait`, then open **http://localhost:4001** (UI) and **http://localhost:4000/api/docs** (API reference).
+- The web image has no API address baked in: set `API_INTERNAL_URL` (compose does) so one image works anywhere.
+- Ollama is not containerised here; the API reaches an Ollama on the host (`host.docker.internal`). On a host without Ollama use `EXTRACTOR_PROVIDER=rules` or `openai`.
+
+## CI/CD summary
+
+| Workflow | Trigger | What it does |
+|---|---|---|
+| `ci.yml` | push to `main`, pull requests | typecheck, lint, API/UI/processor tests, adapter contracts, Docker stack + smoke + Playwright + evaluation, dependency audit, image build + Trivy scan |
+| `publish.yml` | CI succeeded on `main`, `v*` tags, manual | multi-arch images → GHCR |
+| `ci.yml` › `deploy-web` | `main` and repository variable `VERCEL_DEPLOY=true` | optional Vercel deployment of the web app (needs `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`) |

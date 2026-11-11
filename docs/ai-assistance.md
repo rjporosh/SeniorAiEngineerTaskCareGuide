@@ -8,7 +8,11 @@ Wrote the application, tests, Docker/Compose files, scripts and documentation; r
 
 ## What the product itself uses
 
-**No AI model is used at runtime.** Extraction is deterministic and rule-based, so there is no prompt, model, provider or model version to record. `InvoiceExtractorPort` is the seam where a model-backed extractor could be added; if one is, store provider, model, prompt version and timestamps as the specification requires.
+The default extractor (`EXTRACTOR_PROVIDER=rules`) is deterministic and uses no model. Setting `EXTRACTOR_PROVIDER=ollama` (default model `qwen2.5-coder:14b`, local) or `openai` makes a language model *propose* invoice fields.
+
+- **Prompt:** the system prompt and JSON schema are in `apps/api/src/extraction/llm/prompt.ts`, versioned as `PROMPT_VERSION` (currently `invoice-extraction/2026-11-11.1`). The document text is the only user content, wrapped in `<document>` tags and declared untrusted.
+- **Recorded per extraction:** provider, model name and prompt version are stored with every result (`extracted_results.extractor`); the timestamps are the result's `createdAt`.
+- **Safeguards:** schema-constrained decoding plus strict zod validation, grounding of every value in the source text, deterministic amount/date normalisation, rules cross-check, null for anything unsupported. The model has no tools and its output is never executed.
 
 ## Human responsibilities that remain
 

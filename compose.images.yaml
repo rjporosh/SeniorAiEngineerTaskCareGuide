@@ -1,0 +1,25 @@
+# Runs the whole stack from the published images (no local build, no source checkout needed beyond this file, compose.yaml and .env).
+#
+#   cp .env.example .env            # then replace every CHANGE_ME value
+#   docker compose -f compose.yaml -f compose.images.yaml pull
+#   docker compose -f compose.yaml -f compose.images.yaml up -d --wait
+#   open http://localhost:4001      # web UI   |   http://localhost:4000/api/docs   # API reference
+#
+# DOCINT_IMAGE_OWNER / DOCINT_IMAGE_TAG pick another registry owner or a version tag (default: latest).
+services:
+  api:
+    image: ghcr.io/${DOCINT_IMAGE_OWNER:-rjporosh}/docint-api:${DOCINT_IMAGE_TAG:-latest}
+    build: !reset null
+    pull_policy: always
+  migrate:
+    image: ghcr.io/${DOCINT_IMAGE_OWNER:-rjporosh}/docint-api:${DOCINT_IMAGE_TAG:-latest}
+    build: !reset null
+    pull_policy: always
+  web:
+    image: ghcr.io/${DOCINT_IMAGE_OWNER:-rjporosh}/docint-web:${DOCINT_IMAGE_TAG:-latest}
+    build: !reset null
+    pull_policy: always
+  processor:
+    image: ghcr.io/${DOCINT_IMAGE_OWNER:-rjporosh}/docint-processor:${DOCINT_IMAGE_TAG:-latest}
+    build: !reset null
+    pull_policy: always

@@ -1,5 +1,21 @@
 # Testing
 
+## Test types at a glance
+
+| Type | Where it lives | Command |
+|---|---|---|
+| Unit | `apps/api/src/**/*.spec.ts`, `apps/web/src/**/*.test.ts(x)`, `services/document-processor/tests` | `pnpm --filter @docint/api test`, `pnpm --filter @docint/web test`, processor command below |
+| Integration | `apps/api/src/**/*.int.spec.ts` (PostgreSQL, MongoDB, RabbitMQ, Redis, live Ollama) | `./scripts/test-integration.sh` |
+| Functional (browser journeys) | `tests/e2e` (Playwright, desktop + mobile) | `pnpm --filter @docint/e2e test` |
+| Smoke | `scripts/evaluate.mjs --smoke` (real upload → queue → OCR → extraction → database) | `node scripts/evaluate.mjs --smoke` |
+| Performance | `tests/perf/ocr-bench.sh`, processor 1000-page test, `docs/performance.md` | `./tests/perf/ocr-bench.sh` |
+| Load | `tests/load/load.js`, `upload.js` (k6) | `./scripts/run-load.sh load upload` |
+| Stress / spike | `tests/load/stress.js`, `spike.js` (k6) | `./scripts/run-load.sh stress spike` |
+| Rate-limit | `tests/load/ratelimit.js` | `./scripts/run-load.sh ratelimit` |
+| Accuracy evaluation | `scripts/evaluate.mjs` | `node scripts/evaluate.mjs` (rules) · `node scripts/evaluate.mjs --extractor "ollama qwen2.5-coder:14b" --report docs/evaluation-report-llm.md` |
+
+Run the browser journeys and the evaluation with `EXTRACTOR_PROVIDER=rules` (the default) for deterministic, fast results; the model-backed run is slower and is reported separately.
+
 | Layer | What it proves | Command (from the repo root) | Needs |
 |---|---|---|---|
 | API unit + HTTP | Domain rules, validation, extraction, auth, upload limits, review/search/reprocess, metrics — over **real HTTP** with the in-memory adapter and a scripted processor | `pnpm --filter @docint/api test` | Node only |
